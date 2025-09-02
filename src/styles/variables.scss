@@ -1,0 +1,114 @@
+// 🎨 デザインシステム変数 - 大人な近未来イメージ
+
+// Primary Colors - 深い青系（知的・信頼感）
+:root {
+  // ダークモード（デフォルト）
+  --primary-dark: #0F1419;      // メイン背景
+  --primary-blue: #1E3A8A;      // アクセントブルー
+  --primary-cyan: #06B6D4;      // テクノロジー感・音声ボタン
+
+  // Secondary Colors - 洗練されたグレースケール
+  --neutral-900: #111827;       // メインテキスト
+  --neutral-800: #1F2937;       // カード・エリア背景
+  --neutral-700: #374151;       // ボーダー・区切り線
+  --neutral-600: #4B5563;       // サブテキスト
+  --neutral-200: #E5E7EB;       // ライトグレー（ライトモード用）
+  --neutral-50: #F9FAFB;        // 最明（ライトモード背景）
+
+  // Accent Colors - 機能別近未来アクセント
+  --accent-purple: #7C3AED;     // プレミアム機能・Spaceキー
+  --accent-green: #10B981;      // 成功・達成・入力完了
+  --accent-orange: #F59E0B;     // 注意・改善点・中間指
+  --accent-red: #EF4444;        // エラー・重要・小指
+  --accent-blue: #3B82F6;       // フォーカス・人差指・現在位置
+
+  // フォントファミリー
+  --font-primary: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+
+  // レスポンシブフォントサイズ（clampで流体スケール）
+  --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);     // 12-14px
+  --text-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);        // 14-16px  
+  --text-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);      // 16-18px
+  --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);       // 18-20px
+  --text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);       // 20-24px
+  --text-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);         // 24-32px
+  --text-3xl: clamp(2rem, 1.7rem + 1vw, 2.5rem);           // 32-40px
+
+  // スペーシング
+  --space-xs: 0.25rem;     // 4px
+  --space-sm: 0.5rem;      // 8px
+  --space-md: 1rem;        // 16px
+  --space-lg: 1.5rem;      // 24px
+  --space-xl: 2rem;        // 32px
+  --space-2xl: 3rem;       // 48px
+
+  // ボーダー
+  --border-radius-sm: 0.375rem;   // 6px
+  --border-radius-md: 0.5rem;     // 8px
+  --border-radius-lg: 0.75rem;    // 12px
+  --border-radius-xl: 1rem;       // 16px
+
+  // シャドウ
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  // トランジション
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.3s ease-out;
+  --transition-slow: 0.5s ease-out;
+}
+
+// ダークモード（デフォルト）
+[data-theme="dark"] {
+  --bg-primary: var(--primary-dark);
+  --bg-secondary: var(--neutral-800);
+  --bg-tertiary: var(--neutral-700);
+  
+  --text-primary: var(--neutral-50);
+  --text-secondary: var(--neutral-200);
+  --text-tertiary: var(--neutral-600);
+  
+  --border-color: var(--neutral-700);
+}
+
+// ライトモード
+[data-theme="light"] {
+  --bg-primary: var(--neutral-50);
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: var(--neutral-200);
+  
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-700);
+  --text-tertiary: var(--neutral-600);
+  
+  --border-color: var(--neutral-200);
+}
+
+// 指ガイド色分けシステム
+:root {
+  // 左手指の色
+  --finger-left-pinky: var(--accent-red);        // Q A Z 1
+  --finger-left-ring: var(--accent-orange);      // W S X 2
+  --finger-left-middle: var(--accent-green);     // E D C 3
+  --finger-left-index: var(--accent-blue);       // R F V T G B 4 5 6
+  
+  // 右手指の色
+  --finger-right-index: var(--accent-blue);      // Y H N U J M 6 7
+  --finger-right-middle: var(--accent-green);    // I K , 8
+  --finger-right-ring: var(--accent-orange);     // O L . 9
+  --finger-right-pinky: var(--accent-red);       // P ; / 0 - = [ ] \ '
+  
+  // 両親指
+  --finger-thumb: var(--accent-purple);          // Space
+}
+
+// 入力フィードバック色
+:root {
+  --feedback-completed: var(--accent-green);
+  --feedback-current: var(--accent-blue);
+  --feedback-pending: var(--neutral-600);
+  --feedback-error: var(--accent-red);
+}

@@ -1,0 +1,302 @@
+{
+  "app": {
+    "title": "English Typing Game",
+    "subtitle": "日本人向け英語タイピング学習"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "back": "戻る",
+    "settings": "設定",
+    "login": "ログイン",
+    "logout": "ログアウト"
+  },
+  "landing": {
+    "title": "English Typing Game",
+    "subtitle": "楽しく学ぶ英語タイピング",
+    "description": "日本人のための英語学習タイピングゲーム。基本練習から実践的なフレーズまで、段階的に英語力とタイピングスキルを向上させます。",
+    "features": {
+      "basic": "12段階基本タイピング練習",
+      "words": "英単語学習（3レベル）",
+      "phrases": "英語フレーズ学習（6カテゴリー）"
+    },
+    "startButton": "今すぐ始める"
+  },
+  "home": {
+    "title": "学習メニュー",
+    "basicTyping": {
+      "title": "基本タイピング練習",
+      "description": "キーボードの基礎から実践まで12段階で習得",
+      "stages": "ステージ",
+      "progress": "進捗"
+    },
+    "wordLearning": {
+      "title": "英単語学習",
+      "description": "初級・中級・上級の3レベルで単語力を強化"
+    },
+    "phraseLearning": {
+      "title": "英語フレーズ学習",
+      "description": "日常会話からビジネスまで実践的なフレーズ"
+    },
+    "englishLearning": {
+      "title": "英語学習",
+      "description": "英単語と英語フレーズでタイピング練習"
+    },
+    "progressLabels": {
+      "wordProgress": "英単語進捗",
+      "phraseProgress": "フレーズ進捗"
+    },
+    "actions": {
+      "goToStage": "ステージ {stage} に進む",
+      "review": "復習する",
+      "learnWords": "英単語を学ぶ",
+      "learnPhrases": "フレーズを学ぶ"
+    },
+    "activity": {
+      "recentActivity": "最近の活動",
+      "totalGames": "総ゲーム数"
+    },
+    "stats": {
+      "levels": "{count} レベル",
+      "categories": "{count} カテゴリー"
+    }
+  },
+  "words": {
+    "levelSelection": {
+      "title": "レベルを選択してください",
+      "description": "各レベルには異なる難易度の英単語が用意されています"
+    },
+    "levels": {
+      "level1": {
+        "title": "レベル1 - 初級",
+        "description": "日常的な基本単語を学習します"
+      },
+      "level2": {
+        "title": "レベル2 - 中級",
+        "description": "実用的な一般単語を学習します"
+      },
+      "level3": {
+        "title": "レベル3 - 上級",
+        "description": "ビジネス・学術単語を学習します"
+      }
+    },
+    "stats": {
+      "wordCount": "単語数",
+      "totalWords": "総単語数",
+      "progress": "進捗",
+      "bestWPM": "ベストWPM",
+      "accuracy": "正確率"
+    },
+    "stages": {
+      "stageTitle": "ステージ",
+      "wordsCount": "個の単語",
+      "progressFormat": "{completed}/{total}ステージ",
+      "totalWordsFormat": "{count}個"
+    }
+  },
+  "phrases": {
+    "categorySelection": {
+      "title": "カテゴリーを選択してください",
+      "description": "実際の場面で使える実践的な英語フレーズを学習できます"
+    },
+    "categories": {
+      "daily": {
+        "title": "日常会話",
+        "description": "挨拶や感情表現など、毎日使える基本フレーズ"
+      },
+      "business": {
+        "title": "ビジネス",
+        "description": "会議・プレゼン・メールで使うフレーズ"
+      },
+      "travel": {
+        "title": "旅行",
+        "description": "空港・ホテル・観光で役立つフレーズ"
+      },
+      "restaurant": {
+        "title": "レストラン",
+        "description": "注文・支払いで使うフレーズ"
+      },
+      "shopping": {
+        "title": "ショッピング",
+        "description": "買い物・価格交渉のフレーズ"
+      },
+      "emergency": {
+        "title": "病院・緊急時",
+        "description": "症状説明・緊急連絡のフレーズ"
+      }
+    },
+    "stats": {
+      "phraseCount": "フレーズ数",
+      "totalPhrases": "総フレーズ数",
+      "progress": "進捗",
+      "bestWPM": "ベストWPM",
+      "accuracy": "正確率"
+    },
+    "stages": {
+      "stageTitle": "ステージ",
+      "phrasesCount": "個のフレーズ",
+      "progressFormat": "{completed}/{total}ステージ",
+      "totalPhrasesFormat": "{count}個"
+    }
+  },
+  "basicTyping": {
+    "title": "基本タイピング練習",
+    "subtitle": "12段階でマスター",
+    "stage": "ステージ",
+    "locked": "ロック中",
+    "completed": "完了",
+    "current": "現在",
+    "startLesson": "レッスン開始",
+    "bestWPM": "ベストWPM",
+    "accuracy": "正確率",
+    "overallProgress": "全体の進捗",
+    "stagesCompleted": "{completed}/{total}ステージ完了",
+    "stages": {
+      "stage1": {
+        "title": "ホームポジション",
+        "description": "ASDF JKL;の基本姿勢を覚えよう"
+      },
+      "stage2": {
+        "title": "上段キー練習",
+        "description": "QWER UIOP の練習"
+      },
+      "stage3": {
+        "title": "下段キー練習",
+        "description": "ZXCV NM,. の練習"
+      },
+      "stage4": {
+        "title": "数字キー練習",
+        "description": "1234567890 の練習"
+      },
+      "stage5": {
+        "title": "基本単語練習",
+        "description": "簡単な英単語でタイピング練習"
+      },
+      "stage6": {
+        "title": "スペースキー練習",
+        "description": "単語間のスペースを正確に"
+      },
+      "stage7": {
+        "title": "記号キー練習",
+        "description": "! ? , . : ; の練習"
+      },
+      "stage8": {
+        "title": "長文練習(1)",
+        "description": "短い文章でスムーズに"
+      },
+      "stage9": {
+        "title": "長文練習(2)",
+        "description": "複数文で流れるように"
+      },
+      "stage10": {
+        "title": "応用練習(1)",
+        "description": "様々な文型パターン"
+      },
+      "stage11": {
+        "title": "応用練習(2)",
+        "description": "複雑な文章構造"
+      },
+      "stage12": {
+        "title": "マスター級",
+        "description": "実践的な長文タイピング"
+      }
+    }
+  },
+  "game": {
+    "ready": "準備完了",
+    "start": "スタート",
+    "pause": "一時停止",
+    "resume": "再開",
+    "restart": "リスタート",
+    "quit": "終了",
+    "completed": "完了！",
+    "time": "時間",
+    "accuracy": "正確率",
+    "targetWPM": "目標WPM",
+    "targetAccuracy": "目標正確率",
+    "requiredPhrases": "クリア条件",
+    "startButton": "ゲーム開始",
+    "wellDone": "お疲れ様でした！",
+    "finalWPM": "最終WPM",
+    "finalAccuracy": "最終正確率",
+    "totalTime": "合計時間",
+    "retry": "再挑戦",
+    "continue": "続行",
+    "typingGame": "タイピングゲーム",
+    "wordGame": "英単語ゲーム",
+    "phraseGame": "英語フレーズゲーム",
+    "stats": {
+      "time": "タイム",
+      "wpm": "WPM",
+      "accuracy": "正確性",
+      "progress": "進捗"
+    },
+    "keyboard": {
+      "guide": "指ガイド",
+      "fingerGuide": "指ガイド",
+      "audioButton": "音声再生"
+    }
+  },
+  "results": {
+    "title": "結果",
+    "congratulations": "おめでとうございます！",
+    "stats": {
+      "time": "完了時間",
+      "wpm": "タイピング速度",
+      "accuracy": "正確性",
+      "errors": "エラー数"
+    },
+    "nextLevel": "次のレベル",
+    "retry": "再挑戦",
+    "backToMenu": "メニューに戻る"
+  },
+  "settings": {
+    "title": "設定",
+    "theme": {
+      "title": "テーマ",
+      "dark": "ダークモード",
+      "light": "ライトモード"
+    },
+    "language": {
+      "title": "言語",
+      "japanese": "日本語",
+      "english": "English"
+    },
+    "sound": {
+      "title": "サウンド",
+      "enabled": "サウンド有効",
+      "keyboardSound": "キーボード音",
+      "vibration": "バイブレーション"
+    },
+    "reset": "設定をリセット",
+    "close": "閉じる"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "submit": "ログイン",
+      "register": "アカウント作成"
+    },
+    "register": {
+      "title": "アカウント作成",
+      "username": "ユーザー名",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirmPassword": "パスワード確認",
+      "submit": "登録",
+      "login": "ログイン画面へ"
+    }
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "close": "閉じる"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "English Typing Game",
+  "short_name": "TypingGame",
+  "description": "Learn English while improving typing skills - 日本人向け英語タイピング学習ゲーム",
+  "theme_color": "#0F1419",
+  "background_color": "#0F1419",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/",
+  "categories": ["education", "games"],
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/pwa-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "基本タイピング練習",
+      "short_name": "基本練習",
+      "description": "12段階の基本タイピング練習を開始",
+      "url": "/basic-typing",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "英語学習",
+      "short_name": "英語学習",
+      "description": "英単語・英語フレーズでタイピング学習",
+      "url": "/unit",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

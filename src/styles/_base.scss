@@ -1,0 +1,62 @@
+// ベーススタイル
+
+// ヘッダー設定
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+h5 { font-size: var(--text-base); }
+h6 { font-size: var(--text-sm); }
+
+// 段落
+p {
+  margin-bottom: var(--space-md);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+// 強調
+strong,
+b {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+// コード
+code,
+pre {
+  font-family: var(--font-mono);
+  background-color: var(--bg-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--text-sm);
+}
+
+pre {
+  padding: var(--space-md);
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+}
+
+// 選択テキスト
+::selection {
+  background-color: var(--accent-blue);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--accent-blue);
+  color: white;
+}

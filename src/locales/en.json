@@ -1,0 +1,294 @@
+{
+  "app": {
+    "title": "English Typing Game",
+    "subtitle": "English Typing Learning for Japanese Speakers"
+  },
+  "navigation": {
+    "home": "Home",
+    "back": "Back",
+    "settings": "Settings",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "landing": {
+    "title": "English Typing Game",
+    "subtitle": "Learn English Through Typing",
+    "description": "An English learning typing game designed for Japanese speakers. Improve your English skills and typing ability step by step, from basic practice to practical phrases.",
+    "features": {
+      "basic": "12-Stage Basic Typing Practice",
+      "words": "English Word Learning (3 Levels)",
+      "phrases": "English Phrase Learning (6 Categories)"
+    },
+    "startButton": "Start Now"
+  },
+  "home": {
+    "title": "Learning Menu",
+    "basicTyping": {
+      "title": "Basic Typing Practice",
+      "description": "Master keyboard fundamentals through 12 progressive stages",
+      "stages": "Stages",
+      "progress": "Progress"
+    },
+    "englishLearning": {
+      "title": "English Learning",
+      "description": "Practice typing with English words and phrases"
+    },
+    "progressLabels": {
+      "wordProgress": "Word Progress",
+      "phraseProgress": "Phrase Progress"
+    },
+    "actions": {
+      "goToStage": "Go to Stage {stage}",
+      "review": "Review",
+      "learnWords": "Learn Words",
+      "learnPhrases": "Learn Phrases"
+    },
+    "activity": {
+      "recentActivity": "Recent Activity",
+      "totalGames": "Total Games"
+    },
+    "stats": {
+      "levels": "{count} levels",
+      "categories": "{count} categories"
+    }
+  },
+  "words": {
+    "levelSelection": {
+      "title": "Please select a level",
+      "description": "Each level has English words of different difficulty levels"
+    },
+    "levels": {
+      "level1": {
+        "title": "Level 1 - Beginner",
+        "description": "Learn basic everyday vocabulary"
+      },
+      "level2": {
+        "title": "Level 2 - Intermediate",
+        "description": "Learn practical general vocabulary"
+      },
+      "level3": {
+        "title": "Level 3 - Advanced",
+        "description": "Learn business and academic vocabulary"
+      }
+    },
+    "stats": {
+      "wordCount": "Word Count",
+      "totalWords": "Total Words",
+      "progress": "Progress",
+      "bestWPM": "Best WPM",
+      "accuracy": "Accuracy"
+    },
+    "stages": {
+      "stageTitle": "Stage",
+      "wordsCount": "words",
+      "progressFormat": "{completed}/{total} stages",
+      "totalWordsFormat": "{count} words"
+    }
+  },
+  "phrases": {
+    "categorySelection": {
+      "title": "Please select a category",
+      "description": "Learn practical English phrases that can be used in real situations"
+    },
+    "categories": {
+      "daily": {
+        "title": "Daily Conversation",
+        "description": "Basic phrases for daily use including greetings and expressions"
+      },
+      "business": {
+        "title": "Business",
+        "description": "Phrases for meetings, presentations, and emails"
+      },
+      "travel": {
+        "title": "Travel",
+        "description": "Useful phrases for airports, hotels, and sightseeing"
+      },
+      "restaurant": {
+        "title": "Restaurant",
+        "description": "Phrases for ordering and payment"
+      },
+      "shopping": {
+        "title": "Shopping",
+        "description": "Phrases for shopping and price negotiation"
+      },
+      "emergency": {
+        "title": "Hospital/Emergency",
+        "description": "Phrases for describing symptoms and emergency contacts"
+      }
+    },
+    "stats": {
+      "phraseCount": "Phrase Count",
+      "totalPhrases": "Total Phrases",
+      "progress": "Progress",
+      "bestWPM": "Best WPM",
+      "accuracy": "Accuracy"
+    },
+    "stages": {
+      "stageTitle": "Stage",
+      "phrasesCount": "phrases",
+      "progressFormat": "{completed}/{total} stages",
+      "totalPhrasesFormat": "{count} phrases"
+    }
+  },
+  "basicTyping": {
+    "title": "Basic Typing Practice",
+    "subtitle": "Master in 12 Stages",
+    "stage": "Stage",
+    "locked": "Locked",
+    "completed": "Completed",
+    "current": "Current",
+    "startLesson": "Start Lesson",
+    "bestWPM": "Best WPM",
+    "accuracy": "Accuracy",
+    "overallProgress": "Overall Progress",
+    "stagesCompleted": "{completed}/{total} stages completed",
+    "stages": {
+      "stage1": {
+        "title": "Home Position",
+        "description": "Learn the basic position of ASDF JKL;"
+      },
+      "stage2": {
+        "title": "Top Row Keys",
+        "description": "Practice QWER UIOP"
+      },
+      "stage3": {
+        "title": "Bottom Row Keys",
+        "description": "Practice ZXCV NM,."
+      },
+      "stage4": {
+        "title": "Number Keys",
+        "description": "Practice 1234567890"
+      },
+      "stage5": {
+        "title": "Basic Words",
+        "description": "Typing practice with simple English words"
+      },
+      "stage6": {
+        "title": "Space Key Practice",
+        "description": "Accurate spacing between words"
+      },
+      "stage7": {
+        "title": "Symbol Keys",
+        "description": "Practice ! ? , . : ;"
+      },
+      "stage8": {
+        "title": "Long Text (1)",
+        "description": "Smooth typing with short sentences"
+      },
+      "stage9": {
+        "title": "Long Text (2)",
+        "description": "Flowing typing with multiple sentences"
+      },
+      "stage10": {
+        "title": "Applied Practice (1)",
+        "description": "Various sentence patterns"
+      },
+      "stage11": {
+        "title": "Applied Practice (2)",
+        "description": "Complex sentence structures"
+      },
+      "stage12": {
+        "title": "Master Level",
+        "description": "Practical long text typing"
+      }
+    }
+  },
+  "game": {
+    "ready": "Ready",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart",
+    "quit": "Quit",
+    "completed": "Completed!",
+    "time": "Time",
+    "accuracy": "Accuracy",
+    "targetWPM": "Target WPM",
+    "targetAccuracy": "Target Accuracy",
+    "requiredPhrases": "Clear Condition",
+    "startButton": "Start Game",
+    "wellDone": "Well Done!",
+    "finalWPM": "Final WPM",
+    "finalAccuracy": "Final Accuracy",
+    "totalTime": "Total Time",
+    "retry": "Retry",
+    "continue": "Continue",
+    "typingGame": "Typing Game",
+    "wordGame": "Word Game",
+    "phraseGame": "Phrase Game",
+    "stats": {
+      "time": "Time",
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "progress": "Progress"
+    },
+    "keyboard": {
+      "guide": "Finger Guide",
+      "fingerGuide": "Finger Guide",
+      "audioButton": "Play Audio"
+    }
+  },
+  "results": {
+    "title": "Results",
+    "congratulations": "Congratulations!",
+    "stats": {
+      "time": "Completion Time",
+      "wpm": "Typing Speed",
+      "accuracy": "Accuracy",
+      "errors": "Error Count"
+    },
+    "nextLevel": "Next Level",
+    "retry": "Try Again",
+    "backToMenu": "Back to Menu"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": {
+      "title": "Theme",
+      "dark": "Dark Mode",
+      "light": "Light Mode"
+    },
+    "language": {
+      "title": "Language",
+      "japanese": "日本語",
+      "english": "English"
+    },
+    "sound": {
+      "title": "Sound",
+      "enabled": "Sound Enabled",
+      "keyboardSound": "Keyboard Sound",
+      "vibration": "Vibration"
+    },
+    "reset": "Reset Settings",
+    "close": "Close"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Login",
+      "register": "Create Account"
+    },
+    "register": {
+      "title": "Create Account",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Register",
+      "login": "Go to Login"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
+  }
+}

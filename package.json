@@ -1,0 +1,59 @@
+{
+  "name": "vue3-typing-game",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "English learning typing game for Japanese speakers with advanced futuristic design",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm legacy-check && vite",
+    "build": "pnpm legacy-check && vue-tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/",
+    "legacy-check": "node scripts/legacy-detector.js"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "vue": "^3.4.29",
+    "vue-i18n": "^9.13.1",
+    "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@playwright/test": "^1.44.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/vue": "^8.1.0",
+    "@types/node": "^20.14.5",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.5.1",
+    "eslint": "^9.5.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-vue": "^9.26.0",
+    "glob": "^10.4.5",
+    "happy-dom": "^18.0.1",
+    "jsdom": "^24.1.0",
+    "playwright": "^1.44.1",
+    "prettier": "^3.3.2",
+    "sass": "^1.77.6",
+    "typescript": "~5.4.0",
+    "vite": "^5.3.1",
+    "vite-plugin-pwa": "^0.20.0",
+    "vitest": "^1.6.0",
+    "vue-tsc": "^2.0.21"
+  },
+  "pnpm": {
+    "overrides": {
+      "vue": "^3.4.29"
+    }
+  }
+}
