@@ -19,8 +19,14 @@ const PORT = Number(process.env.PORT) || 3001
 const HOST = '0.0.0.0'
 
 // CORS設定
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://vue3-typing-game.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean)
+
 await server.register(cors, {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
 })
