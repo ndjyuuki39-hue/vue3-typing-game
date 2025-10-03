@@ -10,12 +10,12 @@
 
         <form @submit.prevent="handleLogin" class="auth-form">
           <div class="form-group">
-            <label class="form-label">{{ t('auth.email') }}</label>
+            <label class="form-label">{{ t('auth.username') }}</label>
             <input
-              v-model="email"
-              type="email"
+              v-model="username"
+              type="text"
               class="form-input"
-              :placeholder="t('auth.emailPlaceholder')"
+              :placeholder="t('auth.usernamePlaceholder')"
               required
             />
           </div>
@@ -68,19 +68,18 @@ const { t } = useI18n()
 const router = useRouter()
 const { login, loading: isLoading } = useAuth()
 
-const email = ref('')
+const username = ref('')
 const password = ref('')
 
 const canSubmit = computed(() => {
-  return email.value.length > 0 && password.value.length >= 6
+  return username.value.length > 0 && password.value.length >= 6
 })
 
 const handleLogin = async () => {
   if (!canSubmit.value) return
 
   try {
-    // emailをusernameとして使用（バックエンドがusernameを要求するため）
-    await login(email.value, password.value)
+    await login(username.value, password.value)
 
     router.push('/home')
   } catch (error) {
