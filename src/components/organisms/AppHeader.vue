@@ -19,8 +19,8 @@
         <!-- Actions -->
         <div class="header-actions">
           <!-- User Info -->
-          <div v-if="userStore.isAuthenticated" class="user-info">
-            <span class="username">{{ userStore.displayName }}</span>
+          <div v-if="isAuthenticated" class="user-info">
+            <span class="username">{{ user?.displayName || user?.username }}</span>
             <ProgressBar 
               :value="userStore.overallProgress"
               size="sm"
@@ -40,7 +40,7 @@
           </IconButton>
 
           <!-- Login/Logout Button -->
-          <template v-if="!userStore.isAuthenticated">
+          <template v-if="!isAuthenticated">
             <PrimaryButton
               @click="goToLogin"
               size="sm"
@@ -68,6 +68,7 @@
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from '@/composables/useI18n'
+import { useAuth } from '@/composables/useAuth'
 import { useUserStore } from '@/stores/user'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -83,6 +84,7 @@ import LogoutIcon from '@/components/atoms/LogoutIcon.vue'
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const { isAuthenticated, user, logout: authLogout } = useAuth()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
 
@@ -114,8 +116,7 @@ const goToLogin = (): void => {
 }
 
 const logout = (): void => {
-  userStore.clearUser()
-  router.push('/')
+  authLogout()
 }
 </script>
 
