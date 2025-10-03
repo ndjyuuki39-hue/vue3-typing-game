@@ -4,6 +4,31 @@ export class ProgressService {
   constructor(private prisma: PrismaClient) {}
 
   /**
+   * 統合進捗取得（localStorage互換）
+   */
+  async getConsolidatedProgress(userId: string): Promise<any> {
+    const progress = await this.prisma.progress.findUnique({
+      where: { userId }
+    })
+    return progress?.data || null
+  }
+
+  /**
+   * 統合進捗保存（localStorage互換）
+   */
+  async saveConsolidatedProgress(userId: string, data: any): Promise<any> {
+    const progress = await this.prisma.progress.upsert({
+      where: { userId },
+      update: { data },
+      create: {
+        userId,
+        data
+      }
+    })
+    return progress.data
+  }
+
+  /**
    * ユーザーの全進捗取得
    */
   async getAllProgress(userId: string): Promise<UserProgress[]> {

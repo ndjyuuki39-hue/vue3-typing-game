@@ -8,6 +8,24 @@ import { ProgressService } from '../services/progress.service.js'
  */
 export const progressRouter = router({
   /**
+   * 統合進捗取得（localStorage互換）
+   */
+  getConsolidated: protectedProcedure.query(async ({ ctx }) => {
+    const progressService = new ProgressService(ctx.prisma)
+    return await progressService.getConsolidatedProgress(ctx.userId)
+  }),
+
+  /**
+   * 統合進捗保存（localStorage互換）
+   */
+  saveConsolidated: protectedProcedure
+    .input(z.any()) // Accept any JSON structure
+    .mutation(async ({ input, ctx }) => {
+      const progressService = new ProgressService(ctx.prisma)
+      return await progressService.saveConsolidatedProgress(ctx.userId, input)
+    }),
+
+  /**
    * 全進捗取得
    */
   getAll: protectedProcedure.query(async ({ ctx }) => {

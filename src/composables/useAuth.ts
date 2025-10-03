@@ -29,7 +29,7 @@ export const useAuth = () => {
       user.value = result.user
       // Update userStore and load progress (will be empty for new users)
       userStore.setUser(result.user)
-      userStore.loadProgress()
+      await userStore.loadProgress()
 
       return result
     } catch (error) {
@@ -56,7 +56,7 @@ export const useAuth = () => {
       user.value = result.user
       // Update userStore and load user's progress
       userStore.setUser(result.user)
-      userStore.loadProgress()
+      await userStore.loadProgress()
 
       return result
     } catch (error) {
@@ -95,7 +95,7 @@ export const useAuth = () => {
       user.value = userData
       // Update userStore and load user's progress
       userStore.setUser(userData)
-      userStore.loadProgress()
+      await userStore.loadProgress()
       console.log('✅ User authenticated:', userData)
     } catch (error) {
       console.log('⚠️ Auth failed, trying refresh token...')
@@ -109,7 +109,7 @@ export const useAuth = () => {
           user.value = userData
           // Update userStore and load user's progress
           userStore.setUser(userData)
-          userStore.loadProgress()
+          await userStore.loadProgress()
           console.log('✅ Token refreshed, user authenticated')
         } else {
           console.log('❌ No refresh token, logging out')

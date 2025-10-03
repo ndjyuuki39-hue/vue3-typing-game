@@ -404,14 +404,17 @@ export const useUserStore = defineStore('user', () => {
         return
       }
 
-      // Save to localStorage with user ID as key
+      // Save to localStorage with user ID as key (for offline support)
       const userProgressKey = `${PROGRESS_STORAGE_KEY}_${user.value.id}`
       localStorage.setItem(userProgressKey, JSON.stringify(progress.value))
-      console.log(`✅ Progress saved to localStorage for user ${user.value.id}`)
 
-      // Note: Backend sync requires restructuring progress data
-      // Currently using localStorage for Phase 2 MVP
-      // TODO Phase 3: Implement proper backend sync with progress.update API
+      // Save to backend
+      try {
+        await trpc.progress.saveConsolidated.mutate(progress.value)
+        console.log(`✅ Progress saved to backend and localStorage for user ${user.value.id}`)
+      } catch (backendError) {
+        console.warn('⚠️ Backend save failed, using localStorage only:', backendError)
+      }
     } catch (error) {
       console.warn('Failed to save progress:', error)
     }
@@ -428,7 +431,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  const loadProgress = (): void => {
+  const loadProgress = async (): Promise<void> => {
     try {
       // Only load progress if user is authenticated
       if (!user.value?.id) {
@@ -436,7 +439,25 @@ export const useUserStore = defineStore('user', () => {
         return
       }
 
-      // Load from localStorage using user ID as key
+      // Try to load from backend first
+      try {
+        const backendProgress = await trpc.progress.getConsolidated.query()
+        if (backendProgress) {
+          progress.value = {
+            ...progress.value,
+            ...backendProgress
+          }
+          // Also save to localStorage for offline access
+          const userProgressKey = `${PROGRESS_STORAGE_KEY}_${user.value.id}`
+          localStorage.setItem(userProgressKey, JSON.stringify(backendProgress))
+          console.log(`📥 Progress loaded from backend for user ${user.value.id}`)
+          return
+        }
+      } catch (backendError) {
+        console.warn('⚠️ Backend load failed, falling back to localStorage:', backendError)
+      }
+
+      // Fallback to localStorage
       const userProgressKey = `${PROGRESS_STORAGE_KEY}_${user.value.id}`
       const saved = localStorage.getItem(userProgressKey)
       if (saved) {
@@ -450,7 +471,7 @@ export const useUserStore = defineStore('user', () => {
         console.log(`📭 No saved progress found for user ${user.value.id}`)
       }
     } catch (error) {
-      console.warn('Failed to load progress from localStorage:', error)
+      console.warn('Failed to load progress:', error)
     }
   }
 
