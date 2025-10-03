@@ -18,9 +18,14 @@ model User {
   id            String   @id @default(uuid())
   username      String   @unique
   email         String   @unique
-  passwordHash  String
+  passwordHash  String?  // Optional for OAuth users
   displayName   String?
   avatarUrl     String?
+
+  // OAuth fields
+  googleId      String?  @unique
+  authProvider  String   @default("local")  // "local" | "google"
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   lastLoginAt   DateTime?

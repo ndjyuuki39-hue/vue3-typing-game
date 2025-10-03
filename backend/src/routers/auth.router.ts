@@ -7,6 +7,7 @@ import {
   generateRefreshToken,
   verifyRefreshToken
 } from '../utils/jwt.util.js'
+import { getGoogleUserInfo } from '../utils/google-oauth.util.js'
 
 /**
  * 認証ルーター
@@ -224,6 +225,107 @@ export const authRouter = router({
         email: user.email,
         displayName: user.displayName,
         avatarUrl: user.avatarUrl
+      }
+    }),
+
+  /**
+   * Google OAuth ログイン
+   */
+  googleLogin: publicProcedure
+    .input(
+      z.object({
+        accessToken: z.string()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const userService = new UserService(ctx.prisma)
+
+      // Googleからユーザー情報取得
+      const googleUser = await getGoogleUserInfo(input.accessToken)
+
+      if (!googleUser.verified_email) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'メールアドレスが未認証です'
+        })
+      }
+
+      // GoogleIDで既存ユーザー検索
+      let user = await ctx.prisma.user.findUnique({
+        where: { googleId: googleUser.id }
+      })
+
+      // 存在しない場合、メールアドレスで検索（既存アカウント連携）
+      if (!user) {
+        user = await ctx.prisma.user.findUnique({
+          where: { email: googleUser.email }
+        })
+
+        if (user) {
+          // 既存アカウントにGoogleIDを追加
+          user = await ctx.prisma.user.update({
+            where: { id: user.id },
+            data: {
+              googleId: googleUser.id,
+              authProvider: 'google',
+              avatarUrl: googleUser.picture || user.avatarUrl,
+              displayName: user.displayName || googleUser.name
+            }
+          })
+        }
+      }
+
+      // 新規ユーザー作成
+      if (!user) {
+        // Googleのnameからusernameを生成
+        const baseUsername = googleUser.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '')
+          .slice(0, 20)
+
+        let username = baseUsername
+        let counter = 1
+
+        // ユニークなusernameを生成
+        while (await ctx.prisma.user.findUnique({ where: { username } })) {
+          username = `${baseUsername}${counter}`
+          counter++
+        }
+
+        user = await ctx.prisma.user.create({
+          data: {
+            username,
+            email: googleUser.email,
+            displayName: googleUser.name,
+            avatarUrl: googleUser.picture,
+            googleId: googleUser.id,
+            authProvider: 'google',
+            passwordHash: null // Google login doesn't use password
+          }
+        })
+      }
+
+      // 最終ログイン時刻更新
+      await ctx.prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() }
+      })
+
+      // トークン生成
+      const accessToken = generateAccessToken(user.id)
+      const refreshToken = generateRefreshToken(user.id)
+
+      return {
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          displayName: user.displayName,
+          avatarUrl: user.avatarUrl,
+          createdAt: user.createdAt
+        },
+        accessToken,
+        refreshToken
       }
     })
 })

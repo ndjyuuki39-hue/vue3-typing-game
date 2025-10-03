@@ -43,6 +43,12 @@
           </PrimaryButton>
         </form>
 
+        <div class="divider">
+          <span>または</span>
+        </div>
+
+        <GoogleLoginButton button-text="Googleでログイン" />
+
         <div class="form-footer">
           <p class="footer-text">
             {{ t('auth.noAccount') }}
@@ -66,6 +72,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import AppLogo from '@/components/atoms/AppLogo.vue'
 import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
+import GoogleLoginButton from '@/components/molecules/GoogleLoginButton.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -175,6 +182,26 @@ const handleLogin = async () => {
 .submit-button {
   width: 100%;
   margin-top: var(--spacing-lg);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  span {
+    padding: 0 var(--spacing-md);
+  }
 }
 
 .form-footer {
