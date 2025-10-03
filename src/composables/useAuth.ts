@@ -20,6 +20,10 @@ export const useAuth = () => {
         password
       })
 
+      // Clear previous user's data from localStorage
+      localStorage.removeItem('vue3-typing-game-progress')
+      localStorage.removeItem('vue3-typing-game-user')
+
       // トークン保存
       localStorage.setItem('accessToken', result.accessToken)
       localStorage.setItem('refreshToken', result.refreshToken)
