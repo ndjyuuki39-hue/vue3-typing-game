@@ -22,15 +22,14 @@ export const useAuth = () => {
         password
       })
 
-      // Clear previous user's data from localStorage
-      localStorage.removeItem('vue3-typing-game-progress')
-      localStorage.removeItem('vue3-typing-game-user')
-
       // トークン保存
       localStorage.setItem('accessToken', result.accessToken)
       localStorage.setItem('refreshToken', result.refreshToken)
 
       user.value = result.user
+      // Update userStore and load progress (will be empty for new users)
+      userStore.setUser(result.user)
+      userStore.loadProgress()
 
       return result
     } catch (error) {
@@ -55,6 +54,9 @@ export const useAuth = () => {
       localStorage.setItem('refreshToken', result.refreshToken)
 
       user.value = result.user
+      // Update userStore and load user's progress
+      userStore.setUser(result.user)
+      userStore.loadProgress()
 
       return result
     } catch (error) {
@@ -91,6 +93,9 @@ export const useAuth = () => {
       console.log('✅ Access token found, fetching user...')
       const userData = await trpc.auth.me.query()
       user.value = userData
+      // Update userStore and load user's progress
+      userStore.setUser(userData)
+      userStore.loadProgress()
       console.log('✅ User authenticated:', userData)
     } catch (error) {
       console.log('⚠️ Auth failed, trying refresh token...')
@@ -100,7 +105,11 @@ export const useAuth = () => {
         if (refreshToken) {
           const result = await trpc.auth.refresh.mutate({ refreshToken })
           localStorage.setItem('accessToken', result.accessToken)
-          user.value = await trpc.auth.me.query()
+          const userData = await trpc.auth.me.query()
+          user.value = userData
+          // Update userStore and load user's progress
+          userStore.setUser(userData)
+          userStore.loadProgress()
           console.log('✅ Token refreshed, user authenticated')
         } else {
           console.log('❌ No refresh token, logging out')

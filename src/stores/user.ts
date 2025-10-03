@@ -398,9 +398,16 @@ export const useUserStore = defineStore('user', () => {
 
   const saveProgress = async (): Promise<void> => {
     try {
-      // Save to localStorage
-      localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress.value))
-      console.log('✅ Word stage progress saved to localStorage')
+      // Only save progress if user is authenticated
+      if (!user.value?.id) {
+        console.warn('⚠️ Cannot save progress: user not authenticated')
+        return
+      }
+
+      // Save to localStorage with user ID as key
+      const userProgressKey = `${PROGRESS_STORAGE_KEY}_${user.value.id}`
+      localStorage.setItem(userProgressKey, JSON.stringify(progress.value))
+      console.log(`✅ Progress saved to localStorage for user ${user.value.id}`)
 
       // Note: Backend sync requires restructuring progress data
       // Currently using localStorage for Phase 2 MVP
@@ -423,14 +430,24 @@ export const useUserStore = defineStore('user', () => {
 
   const loadProgress = (): void => {
     try {
-      const saved = localStorage.getItem(PROGRESS_STORAGE_KEY)
+      // Only load progress if user is authenticated
+      if (!user.value?.id) {
+        console.log('⚠️ No authenticated user, skipping progress load')
+        return
+      }
+
+      // Load from localStorage using user ID as key
+      const userProgressKey = `${PROGRESS_STORAGE_KEY}_${user.value.id}`
+      const saved = localStorage.getItem(userProgressKey)
       if (saved) {
         const savedProgress = JSON.parse(saved)
         progress.value = {
           ...progress.value,
           ...savedProgress
         }
-        console.log('📥 Progress loaded from localStorage')
+        console.log(`📥 Progress loaded from localStorage for user ${user.value.id}`)
+      } else {
+        console.log(`📭 No saved progress found for user ${user.value.id}`)
       }
     } catch (error) {
       console.warn('Failed to load progress from localStorage:', error)
@@ -470,9 +487,7 @@ export const useUserStore = defineStore('user', () => {
       totalCharactersTyped: 0,
       totalGames: 0
     }
-    // Also clear from localStorage
-    localStorage.removeItem(PROGRESS_STORAGE_KEY)
-    console.log('✅ Progress reset to initial state and cleared from localStorage')
+    console.log('✅ Progress reset to initial state')
   }
 
   const clearStorage = (): void => {
@@ -486,7 +501,7 @@ export const useUserStore = defineStore('user', () => {
 
   // Initialize
   loadUser()
-  loadProgress()
+  // Note: loadProgress() is called by useAuth after authentication
 
   return {
     // State
