@@ -402,18 +402,9 @@ export const useUserStore = defineStore('user', () => {
       localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress.value))
       console.log('✅ Word stage progress saved to localStorage')
 
-      // Save to backend if user is authenticated
-      const accessToken = localStorage.getItem('accessToken')
-      if (accessToken) {
-        try {
-          await trpc.progress.updateProgress.mutate({
-            progressData: progress.value
-          })
-          console.log('✅ Progress saved to backend')
-        } catch (apiError) {
-          console.warn('Failed to save progress to backend:', apiError)
-        }
-      }
+      // Note: Backend sync requires restructuring progress data
+      // Currently using localStorage for Phase 2 MVP
+      // TODO Phase 3: Implement proper backend sync with progress.update API
     } catch (error) {
       console.warn('Failed to save progress:', error)
     }
