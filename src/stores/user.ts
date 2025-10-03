@@ -445,6 +445,42 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const clearProgress = (): void => {
+    // Reset progress to initial state
+    progress.value = {
+      basicTyping: {
+        currentStage: 1,
+        completedStages: [],
+        bestWpm: {},
+        bestAccuracy: {}
+      },
+      words: {
+        currentLevel: 1,
+        completedLevels: [],
+        bestWpm: {},
+        bestAccuracy: {}
+      },
+      phrases: {
+        completedCategories: [],
+        bestWpm: {},
+        bestAccuracy: {}
+      },
+      core: {
+        currentStage: 1,
+        completedStages: [],
+        completed: [],
+        bestWpm: {},
+        bestAccuracy: {},
+        stageBestWpm: {},
+        stageBestAccuracy: {}
+      },
+      totalPlayTime: 0,
+      totalCharactersTyped: 0,
+      totalGames: 0
+    }
+    console.log('✅ Progress reset to initial state')
+  }
+
   const clearStorage = (): void => {
     try {
       localStorage.removeItem(USER_STORAGE_KEY)
@@ -488,6 +524,7 @@ export const useUserStore = defineStore('user', () => {
     completePhraseCategory,
     updateGameStats,
     loadUser,
-    loadProgress
+    loadProgress,
+    clearProgress
   }
 })

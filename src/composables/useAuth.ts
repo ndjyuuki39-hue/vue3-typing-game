@@ -1,12 +1,14 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { trpc } from '@/api/trpc'
+import { useUserStore } from '@/stores/user'
 
 const user = ref<any>(null)
 const loading = ref(false)
 
 export const useAuth = () => {
   const router = useRouter()
+  const userStore = useUserStore()
 
   const isAuthenticated = computed(() => !!user.value)
 
@@ -70,6 +72,8 @@ export const useAuth = () => {
     localStorage.removeItem('vue3-typing-game-progress')
     localStorage.removeItem('vue3-typing-game-user')
     user.value = null
+    // Reset userStore progress to initial state
+    userStore.clearProgress()
     router.push('/login')
   }
 
