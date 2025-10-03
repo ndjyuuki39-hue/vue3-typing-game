@@ -390,13 +390,13 @@ const addSelectedToMyPhrases = () => {
 // ステージクリア時の処理
 const handleStageCompletion = () => {
   console.log('🏆 Clear.vue handleStageCompletion called')
-  console.log('Game type:', gameType)
+  console.log('Game type:', gameType.value)
   console.log('Stage ID:', stageId.value)
-  
+
   const wpm = gameStore.lastWPM || 0
   const accuracy = gameStore.lastAccuracy || 0
-  
-  if (gameType === 'basic') {
+
+  if (gameType.value === 'basic') {
     // 基本タイピングステージクリア処理
     const currentStage = stageId.value
     console.log('Game stats:', { currentStage, wpm, accuracy })
@@ -405,7 +405,7 @@ const handleStageCompletion = () => {
     userStore.completeBasicStage(currentStage, wpm, accuracy)
 
     console.log(`🎯 ステージ${currentStage}クリア！次のステージ: ${userStore.progress.basicTyping.currentStage}`)
-  } else if (gameType === 'words') {
+  } else if (gameType.value === 'words') {
     // 英単語ステージクリア処理
     const level = levelId.value
     const stage = stageId.value
@@ -415,7 +415,7 @@ const handleStageCompletion = () => {
     userStore.completeWordStage(level, stage, wpm, accuracy)
 
     console.log(`🎯 英単語 レベル${level} ステージ${stage}クリア！`)
-  } else if (gameType === 'phrases') {
+  } else if (gameType.value === 'phrases') {
     // 英語フレーズステージクリア処理
     const category = categoryId.value
     const stage = stageId.value
@@ -425,7 +425,7 @@ const handleStageCompletion = () => {
     userStore.completePhraseStage(category, stage, wpm, accuracy)
 
     console.log(`🎯 英語フレーズ ${category} ステージ${stage}クリア！`)
-  } else if (gameType === 'core-substage') {
+  } else if (gameType.value === 'core-substage') {
     // コア構文ユニットクリア処理
     const stage = stageId.value
     const substage = route.params['substage'] as '1' | '2'
@@ -434,7 +434,7 @@ const handleStageCompletion = () => {
     const progressKey = `core_stage_${stage}_${substage}`
     userStore.completeCoreSubstage(progressKey, wpm, accuracy)
     console.log(`🎯 コア構文 ステージ${stage} ユニット${substage}クリア！`)
-  } else if (gameType === 'core') {
+  } else if (gameType.value === 'core') {
     // コア構文ステージクリア処理
     const stage = stageId.value
     console.log('Core syntax game stats:', { stage, wpm, accuracy })
