@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { trpc } from '@/api/trpc'
 
 export interface User {
   id: string
@@ -395,11 +396,26 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  const saveProgress = (): void => {
+  const saveProgress = async (): Promise<void> => {
     try {
+      // Save to localStorage
       localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress.value))
+      console.log('✅ Word stage progress saved to localStorage')
+
+      // Save to backend if user is authenticated
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
+        try {
+          await trpc.progress.updateProgress.mutate({
+            progressData: progress.value
+          })
+          console.log('✅ Progress saved to backend')
+        } catch (apiError) {
+          console.warn('Failed to save progress to backend:', apiError)
+        }
+      }
     } catch (error) {
-      console.warn('Failed to save progress to localStorage:', error)
+      console.warn('Failed to save progress:', error)
     }
   }
 
