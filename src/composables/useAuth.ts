@@ -67,6 +67,8 @@ export const useAuth = () => {
   const logout = () => {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
+    localStorage.removeItem('vue3-typing-game-progress')
+    localStorage.removeItem('vue3-typing-game-user')
     user.value = null
     router.push('/login')
   }
