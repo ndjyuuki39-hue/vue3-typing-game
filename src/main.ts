@@ -5,6 +5,9 @@ import router from './router/index'
 
 import App from './App.vue'
 
+// Initialize API layer
+import { initializeApi, setupVueErrorHandler, healthCheck } from './api'
+
 // Import global styles
 import './styles/main.scss'
 
@@ -26,10 +29,23 @@ const i18n = createI18n({
   }
 })
 
+// Initialize API layer
+initializeApi()
+
+// Setup global error handling
+setupVueErrorHandler(app)
+
 // Install plugins
 app.use(createPinia())
 app.use(router)
 app.use(i18n)
+
+// Health check in development
+if (import.meta.env.MODE === 'development') {
+  healthCheck().then(result => {
+    console.log('🏥 [API Health Check]', result)
+  })
+}
 
 // Mount app
 app.mount('#app')

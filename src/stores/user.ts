@@ -29,6 +29,15 @@ export interface UserProgress {
     bestWpm: Record<string, number>
     bestAccuracy: Record<string, number>
   }
+  core: {
+    currentStage: number
+    completedStages: number[]
+    completed: string[]  // サブステージキー用: 'core_stage_1_1', 'core_stage_1_2'など
+    bestWpm: Record<number, number>
+    bestAccuracy: Record<number, number>
+    stageBestWpm: Record<string, number>  // サブステージ別
+    stageBestAccuracy: Record<string, number>  // サブステージ別
+  }
   totalPlayTime: number
   totalCharactersTyped: number
   totalGames: number
@@ -54,6 +63,15 @@ export const useUserStore = defineStore('user', () => {
       completedCategories: [],
       bestWpm: {},
       bestAccuracy: {}
+    },
+    core: {
+      currentStage: 1,
+      completedStages: [],
+      completed: [],
+      bestWpm: {},
+      bestAccuracy: {},
+      stageBestWpm: {},
+      stageBestAccuracy: {}
     },
     totalPlayTime: 0,
     totalCharactersTyped: 0,
@@ -84,6 +102,12 @@ export const useUserStore = defineStore('user', () => {
   const phrasesProgress = computed(() => {
     const completed = progress.value.phrases.completedCategories.length
     const total = 6 // 6 categories total
+    return Math.round((completed / total) * 100)
+  })
+
+  const coreProgress = computed(() => {
+    const completed = progress.value.core.completedStages.length
+    const total = 10 // 10 core phrase stages total
     return Math.round((completed / total) * 100)
   })
 
@@ -260,11 +284,11 @@ export const useUserStore = defineStore('user', () => {
 
   const completePhraseCategory = (category: string, wpm: number, accuracy: number): void => {
     const phrases = progress.value.phrases
-    
+
     if (!phrases.completedCategories.includes(category)) {
       phrases.completedCategories.push(category)
     }
-    
+
     // Update best scores if improved
     if (!phrases.bestWpm[category] || wpm > phrases.bestWpm[category]) {
       phrases.bestWpm[category] = wpm
@@ -272,8 +296,82 @@ export const useUserStore = defineStore('user', () => {
     if (!phrases.bestAccuracy[category] || accuracy > phrases.bestAccuracy[category]) {
       phrases.bestAccuracy[category] = accuracy
     }
-    
+
     saveProgress()
+  }
+
+  // コアフレーズのステージ完了処理
+  const completeCoreSubstage = (progressKey: string, wpm: number, accuracy: number): void => {
+    console.log(`🎮 completeCoreSubstage called: progressKey=${progressKey}, wpm=${wpm}, accuracy=${accuracy}`)
+    const coreProgress = progress.value.core
+
+    // サブステージ完了記録
+    if (!coreProgress.completed) {
+      coreProgress.completed = []
+    }
+    if (!coreProgress.completed.includes(progressKey)) {
+      coreProgress.completed.push(progressKey)
+    }
+
+    // ベスト記録更新
+    if (!coreProgress.stageBestWpm) {
+      coreProgress.stageBestWpm = {}
+    }
+    if (!coreProgress.stageBestAccuracy) {
+      coreProgress.stageBestAccuracy = {}
+    }
+    if (!coreProgress.stageBestWpm[progressKey] || wpm > coreProgress.stageBestWpm[progressKey]) {
+      coreProgress.stageBestWpm[progressKey] = wpm
+    }
+    if (!coreProgress.stageBestAccuracy[progressKey] || accuracy > coreProgress.stageBestAccuracy[progressKey]) {
+      coreProgress.stageBestAccuracy[progressKey] = accuracy
+    }
+
+    console.log(`✅ コア構文 ${progressKey} クリア！`)
+    console.log('Updated progress:', {
+      completed: [...coreProgress.completed],
+      stageBestWpm: { ...coreProgress.stageBestWpm },
+      stageBestAccuracy: { ...coreProgress.stageBestAccuracy }
+    })
+
+    saveProgress()
+  }
+
+  const completeCoreStage = (stage: number, wpm: number, accuracy: number): void => {
+    console.log(`🎮 completeCoreStage called: stage=${stage}, wpm=${wpm}, accuracy=${accuracy}`)
+    const coreProgress = progress.value.core
+
+    console.log('Before:', {
+      currentStage: coreProgress.currentStage,
+      completedStages: [...coreProgress.completedStages]
+    })
+
+    // ステージ完了記録
+    if (!coreProgress.completedStages.includes(stage)) {
+      coreProgress.completedStages.push(stage)
+      coreProgress.completedStages.sort((a, b) => a - b)
+    }
+
+    // ベストスコア更新
+    if (!coreProgress.bestWpm[stage] || wpm > coreProgress.bestWpm[stage]) {
+      coreProgress.bestWpm[stage] = wpm
+    }
+    if (!coreProgress.bestAccuracy[stage] || accuracy > coreProgress.bestAccuracy[stage]) {
+      coreProgress.bestAccuracy[stage] = accuracy
+    }
+
+    // 次のステージに進む
+    if (stage === coreProgress.currentStage) {
+      coreProgress.currentStage = stage + 1
+    }
+
+    console.log('After:', {
+      currentStage: coreProgress.currentStage,
+      completedStages: [...coreProgress.completedStages]
+    })
+
+    saveProgress()
+    console.log('✅ Core stage progress saved to localStorage')
   }
 
   const updateGameStats = (playTime: number, charactersTyped: number): void => {
@@ -358,8 +456,9 @@ export const useUserStore = defineStore('user', () => {
     basicTypingProgress,
     wordsProgress,
     phrasesProgress,
+    coreProgress,
     overallProgress,
-    
+
     // Actions
     setUser,
     clearUser,
@@ -367,6 +466,8 @@ export const useUserStore = defineStore('user', () => {
     completeBasicStage,
     completeWordStage,
     completePhraseStage,
+    completeCoreStage,
+    completeCoreSubstage,
     completeWordLevel,
     completePhraseCategory,
     updateGameStats,

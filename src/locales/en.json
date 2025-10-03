@@ -225,7 +225,18 @@
     "keyboard": {
       "guide": "Finger Guide",
       "fingerGuide": "Finger Guide",
-      "audioButton": "Play Audio"
+      "audioButton": "Play Audio",
+      "fingers": {
+        "pinkyLeft": "Left Pinky",
+        "ringLeft": "Left Ring",
+        "middleLeft": "Left Middle",
+        "indexLeft": "Left Index",
+        "thumb": "Thumb",
+        "indexRight": "Right Index",
+        "middleRight": "Right Middle",
+        "ringRight": "Right Ring",
+        "pinkyRight": "Right Pinky"
+      }
     }
   },
   "results": {
@@ -278,6 +289,23 @@
       "confirmPassword": "Confirm Password",
       "submit": "Register",
       "login": "Go to Login"
+    }
+  },
+  "clear": {
+    "excellent": "Excellent!",
+    "finalScore": "Final Score",
+    "accuracy": "Accuracy",
+    "wpm": "WPM",
+    "time": "Time",
+    "overallProgress": "Overall Progress",
+    "progressText": "Progress {progress}% achieved",
+    "backToHome": "Back to Home",
+    "continue": "Continue",
+    "messages": {
+      "keepPracticing": "Keep practicing!",
+      "good": "Good job!",
+      "excellent": "Excellent work!",
+      "perfect": "Perfect performance!"
     }
   },
   "common": {

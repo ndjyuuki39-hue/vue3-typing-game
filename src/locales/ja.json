@@ -233,7 +233,18 @@
     "keyboard": {
       "guide": "指ガイド",
       "fingerGuide": "指ガイド",
-      "audioButton": "音声再生"
+      "audioButton": "音声再生",
+      "fingers": {
+        "pinkyLeft": "左小指",
+        "ringLeft": "左薬指",
+        "middleLeft": "左中指",
+        "indexLeft": "左人差し指",
+        "thumb": "親指",
+        "indexRight": "右人差し指",
+        "middleRight": "右中指",
+        "ringRight": "右薬指",
+        "pinkyRight": "右小指"
+      }
     }
   },
   "results": {
@@ -286,6 +297,23 @@
       "confirmPassword": "パスワード確認",
       "submit": "登録",
       "login": "ログイン画面へ"
+    }
+  },
+  "clear": {
+    "excellent": "素晴らしい！",
+    "finalScore": "最終スコア",
+    "accuracy": "正確率",
+    "wpm": "WPM",
+    "time": "タイム",
+    "overallProgress": "全体の進捗",
+    "progressText": "進捗率 {progress}% 達成",
+    "backToHome": "ホームに戻る",
+    "continue": "次へ",
+    "messages": {
+      "keepPracticing": "練習を続けて頑張りましょう！",
+      "excellent": "パーフェクト！",
+      "good": "よくできました！",
+      "needsWork": "もう少し練習が必要です"
     }
   },
   "common": {

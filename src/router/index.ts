@@ -8,17 +8,26 @@ const Home = () => import('../pages/Home.vue')
 // 基本タイピング練習
 const BasicTyping = () => import('../pages/BasicTyping.vue')
 
-// 英語学習（単語・フレーズ）
+// 英語学習（単語・フレーズ・コア）
 const WordLevel = () => import('../pages/WordLevel.vue')
 const PhraseCategory = () => import('../pages/PhraseCategory.vue')
 const WordStages = () => import('../pages/WordStages.vue')
 const PhraseStages = () => import('../pages/PhraseStages.vue')
 const Game = () => import('../pages/Game.vue')
 const Clear = () => import('../pages/Clear.vue')
+const RandomGame = () => import('../pages/RandomGame.vue')
+
+// MY フレーズ機能
+const MyPhrases = () => import('../pages/MyPhrases.vue')
+const MyPhrasesPractice = () => import('../pages/MyPhrasesPractice.vue')
 
 // ユーザー認証
 const Login = () => import('../pages/Login.vue')
 const Register = () => import('../pages/Register.vue')
+const DataMigration = () => import('../pages/DataMigration.vue')
+
+// テストページ（開発用）
+const KeyboardTest = () => import('../pages/KeyboardTest.vue')
 
 const routes: RouteRecordRaw[] = [
   // ランディングページ
@@ -95,11 +104,18 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '英単語クリア',
       unitType: 'words'
+    }
+  },
+  {
+    path: '/random/words/:level',
+    name: 'RandomWordGame',
+    component: RandomGame,
+    meta: {
+      title: '英単語ランダム学習'
     },
     props: (route) => ({
-      level: Number(route.params['level']),
-      stage: Number(route.params['stage']),
-      unitType: 'words'
+      type: 'words',
+      level: Number(route.params['level'])
     })
   },
 
@@ -109,12 +125,11 @@ const routes: RouteRecordRaw[] = [
     name: 'BasicTypingGame',
     component: Game,
     meta: {
-      title: '基本タイピング練習',
-      unitType: 'basic'
+      title: '基本タイピング練習'
     },
     props: (route) => ({
       stage: Number(route.params['stage']),
-      unitType: 'basic'
+      unitType: 'basic' as const
     })
   },
   {
@@ -122,13 +137,8 @@ const routes: RouteRecordRaw[] = [
     name: 'BasicTypingClear',
     component: Clear,
     meta: {
-      title: '基本タイピングクリア',
-      unitType: 'basic'
-    },
-    props: (route) => ({
-      stage: Number(route.params['stage']),
-      unitType: 'basic'
-    })
+      title: '基本タイピングクリア'
+    }
   },
 
   // 英語フレーズ学習（6カテゴリー）
@@ -172,12 +182,121 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '英語フレーズクリア',
       unitType: 'phrases'
+    }
+  },
+  {
+    path: '/random/phrases/:category',
+    name: 'RandomPhraseGame',
+    component: RandomGame,
+    meta: {
+      title: '英語フレーズランダム学習'
     },
     props: (route) => ({
-      category: String(route.params['category']),
-      stage: Number(route.params['stage']),
-      unitType: 'phrases'
+      type: 'phrases',
+      level: String(route.params['category'])
     })
+  },
+  {
+    path: '/random/core/:stage?',
+    name: 'RandomCoreGame',
+    component: RandomGame,
+    meta: {
+      title: 'コア構文ランダム学習'
+    },
+    props: (route) => ({
+      type: 'core',
+      level: route.params['stage'] || 'all'
+    })
+  },
+
+  // ランダムゲーム・SRSゲーム専用クリア画面
+  {
+    path: '/random-clear',
+    name: 'RandomGameClear',
+    component: Clear,
+    meta: {
+      title: 'ランダム学習完了'
+    }
+  },
+
+  // コア構文マスター - セクション画面（13ステージ選択）
+  {
+    path: '/core-stages',
+    name: 'CoreStages',
+    component: () => import('../pages/CoreStagesDetail.vue'),
+    meta: {
+      title: 'コア構文マスター - セクション選択'
+    }
+  },
+  // セクションからユニット画面へ遷移（A/Bサブステージ選択）
+  {
+    path: '/core-stages/stage/:stage/substages',
+    name: 'CoreSubstages',
+    component: () => import('../pages/CoreSubstages.vue'),
+    meta: {
+      title: 'コア構文マスター - ユニット選択'
+    },
+    props: (route) => ({
+      stage: Number(route.params['stage'])
+    })
+  },
+  // サブステージゲーム画面（10フレーズずつ）
+  {
+    path: '/core-substages/game/:stage/:substage',
+    name: 'CoreSubstageGame',
+    component: Game,
+    meta: {
+      title: 'コア構文練習'
+    },
+    props: (route) => ({
+      stage: Number(route.params['stage']),
+      substage: String(route.params['substage']),
+      unitType: 'core-substage' as const
+    })
+  },
+  // サブステージクリア画面
+  {
+    path: '/core-substages/clear/:stage/:substage',
+    name: 'CoreSubstageClear',
+    component: Clear,
+    meta: {
+      title: 'コア構文クリア'
+    }
+  },
+  // 旧形式との互換性のため残す（リダイレクト用）
+  {
+    path: '/core-stages/stage/:stage',
+    name: 'CoreStageGame',
+    redirect: (to) => ({
+      name: 'CoreSubstages',
+      params: { stage: to.params['stage'] }
+    })
+  },
+  {
+    path: '/core-stages/clear/:stage',
+    name: 'CoreStageClear',
+    component: Clear,
+    meta: {
+      title: 'コア構文クリア'
+    }
+  },
+
+  // MY フレーズ機能
+  {
+    path: '/my-phrases',
+    name: 'MyPhrases',
+    component: MyPhrases,
+    meta: {
+      title: 'MYフレーズ管理'
+    }
+  },
+  {
+    path: '/my-phrases/practice',
+    name: 'MyPhrasesPractice',
+    component: MyPhrasesPractice,
+    meta: {
+      title: 'MYフレーズ練習'
+    }
   },
 
   // 認証
@@ -200,6 +319,28 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
+  // データ移行
+  {
+    path: '/data-migration',
+    name: 'DataMigration',
+    component: DataMigration,
+    meta: {
+      title: 'データ移行',
+      hideHeader: true
+    }
+  },
+
+  // テストページ（開発用）
+  {
+    path: '/keyboard-test',
+    name: 'KeyboardTest',
+    component: KeyboardTest,
+    meta: {
+      title: 'キーボードガイドテスト',
+      hideHeader: false
+    }
+  },
+
   // 404リダイレクト
   {
     path: '/:pathMatch(.*)*',
@@ -210,7 +351,7 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, savedPosition) {
     // 常にページ上部にスクロール
     if (savedPosition) {
       return savedPosition
@@ -220,7 +361,7 @@ const router = createRouter({
 })
 
 // ナビゲーションガード
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   // ページタイトル設定
   const title = to.meta?.title as string
   if (title) {
@@ -228,10 +369,10 @@ router.beforeEach((to, from, next) => {
   } else {
     document.title = 'English Typing Game'
   }
-  
+
   // TODO: 認証が必要なページのチェック
   // const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  
+
   next()
 })
 

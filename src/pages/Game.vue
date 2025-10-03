@@ -1,74 +1,52 @@
 <template>
   <div class="game-page">
-    <PageHeader 
-      :title="gameTitle" 
-      :showBack="true" 
-    />
+    <!-- ゲーム専用のコンパクトヘッダー -->
+    <div class="game-header-wrapper">
+      <PageHeader
+        :title="gameTitle"
+      >
+        <template #actions>
+          <div class="header-progress" v-if="gameStarted && !gameCompleted">
+            <span class="progress-label">{{ phrasesCompleted }} / {{ totalPhrases }}</span>
+            <ProgressBar
+              :value="(phrasesCompleted / totalPhrases) * 100"
+              size="sm"
+              :showLabel="false"
+            />
+          </div>
+        </template>
+      </PageHeader>
+    </div>
     
     <div class="game-container">
       <!-- ゲーム開始前 -->
-      <div v-if="!gameStarted" class="start-screen">
-        <div class="game-info">
-          <h2 class="game-title">{{ currentContent.title }}</h2>
-          <p class="game-description">{{ currentContent.description }}</p>
-          
-          <div class="game-objectives">
-            <div class="objective">
-              <span class="objective-label">{{ t('game.targetWPM') }}</span>
-              <span class="objective-value">{{ currentContent.targetWPM }}</span>
-            </div>
-            <div class="objective">
-              <span class="objective-label">{{ t('game.targetAccuracy') }}</span>
-              <span class="objective-value">{{ currentContent.targetAccuracy }}%</span>
-            </div>
-            <div class="objective" v-if="currentContent.requiredPhrases">
-              <span class="objective-label">{{ t('game.requiredPhrases') }}</span>
-              <span class="objective-value">{{ currentContent.requiredPhrases }}</span>
-            </div>
+      <div v-if="!gameStarted" class="game-screen">
+        
+        <!-- 📝 直接入力エリア -->
+        <div class="direct-input-area">
+          <div class="typing-text start-message">
+            <span class="start-instruction">{{ t('game.ready') }}</span>
+            <span class="start-spacebar">Press SPACE to Start</span>
           </div>
         </div>
-        
-        <PrimaryButton @click="startGame" size="lg" variant="primary">
-          {{ t('game.startButton') }}
-        </PrimaryButton>
+
+        <!-- 🈁 ゲーム情報表示エリア -->
+        <div class="translation-area">
+          <p class="japanese-text">{{ currentContent.title }} - {{ currentContent.description }}</p>
+        </div>
+
+        <!-- 🎹 指ガイド付きキーボード -->
+        <div class="keyboard-section">
+          <KeyboardGuide :highlightKey="' '" />
+        </div>
+
       </div>
 
       <!-- ゲーム中 -->
       <div v-else-if="!gameCompleted" class="game-screen">
-        <div class="game-header">
-          <div class="timer">
-            <span class="timer-label">{{ t('game.time') }}</span>
-            <span class="timer-value">{{ formatTime(elapsedTime) }}</span>
-          </div>
-          <div class="progress-section">
-            <ProgressBar :value="progress" :showLabel="true" />
-            <div class="phrase-progress">{{ phrasesCompleted }}/{{ totalPhrases }} フレーズ</div>
-          </div>
-          <div class="current-stats">
-            <div class="stat">
-              <span class="stat-value">{{ currentWPM }}</span>
-              <span class="stat-label">WPM</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">{{ currentAccuracy }}%</span>
-              <span class="stat-label">{{ t('game.accuracy') }}</span>
-            </div>
-          </div>
-        </div>
 
-        <!-- 音声再生ボタン -->
-        <div v-if="currentContent.hasAudio" class="audio-controls">
-          <PrimaryButton @click="playAudio" variant="ghost" size="sm">
-            <PlayIcon />
-          </PrimaryButton>
-        </div>
-
-        <!-- タイピングエリア -->
-        <div class="typing-area">
-          <div class="original-text" v-if="gameType === 'phrases' || gameType === 'words'">
-            <p class="japanese-text">{{ currentContent.japanese }}</p>
-          </div>
-          
+        <!-- 📝 直接入力エリア -->
+        <div class="direct-input-area">
           <div class="typing-text">
             <span 
               v-for="(char, index) in currentText"
@@ -85,10 +63,28 @@
           </div>
         </div>
 
-        <!-- キーボードガイド -->
-        <div v-if="keyboardGuideEnabled" class="keyboard-section">
-          <KeyboardGuide v-if="nextKey" :highlightKey="nextKey" />
+        <!-- 🈁 和訳表示エリア -->
+        <div v-if="gameType === 'phrases' || gameType === 'words' || gameType === 'core' || gameType === 'core-substage'" class="translation-area">
+          <p class="japanese-text">{{ currentContent.japanese }}</p>
         </div>
+
+        <!-- 音声再生ボタン -->
+        <div v-if="currentContent.hasAudio" class="audio-section">
+          <button @click="playAudio" class="audio-button">
+            <div class="audio-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <span class="audio-text">音声を聞く</span>
+          </button>
+        </div>
+
+        <!-- 🎹 指ガイド付きキーボード -->
+        <div class="keyboard-section">
+          <KeyboardGuide :highlightKey="nextKey || ''" />
+        </div>
+
       </div>
 
       <!-- ゲーム完了 -->
@@ -133,15 +129,18 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/composables/useI18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
 import { useContentStore } from '@/stores/content'
+import { useAdaptiveLearning } from '@/composables/useAdaptiveLearning'
+import { useProgress } from '@/composables/useProgress'
+import { useSRS } from '@/composables/useSRS'
+import { useAuth } from '@/composables/useAuth'
 import PageHeader from '@/components/molecules/PageHeader.vue'
 import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
-import ProgressBar from '@/components/atoms/ProgressBar.vue'
 import CheckIcon from '@/components/atoms/CheckIcon.vue'
-import PlayIcon from '@/components/atoms/PlayIcon.vue'
+import ProgressBar from '@/components/atoms/ProgressBar.vue'
 import KeyboardGuide from '@/components/organisms/KeyboardGuide.vue'
 
 const { t } = useI18n()
@@ -149,12 +148,18 @@ const route = useRoute()
 const router = useRouter()
 const gameStore = useGameStore()
 const contentStore = useContentStore()
+const adaptiveLearning = useAdaptiveLearning()
+const { recordSession } = useProgress()
+const { getOrCreateCard, recordReview } = useSRS()
+const { isAuthenticated } = useAuth()
 
 // ルートパラメータから判定
 const gameType = computed(() => {
   const path = route.path
   if (path.includes('words')) return 'words'
-  if (path.includes('phrases')) return 'phrases'
+  if (path.includes('phrases') && !path.includes('core-stages')) return 'phrases'
+  if (path.includes('core-stages/stage') || path.includes('core-phrases')) return 'core'
+  if (path.includes('core-substages/game')) return 'core-substage'
   return 'basic'
 })
 
@@ -162,16 +167,20 @@ const gameTitle = computed(() => {
   switch (gameType.value) {
     case 'words': return t('game.wordGame')
     case 'phrases': return t('game.phraseGame')
+    case 'core': return 'コアフレーズ練習'
+    case 'core-substage': return 'コア構文練習'
     default: return t('game.typingGame')
   }
 })
 
-const keyboardGuideEnabled = computed(() => true) // TODO: settingsStoreにkeyboardGuideEnabled追加
+// TODO: settingsStoreにkeyboardGuideEnabled追加後に有効化
+// const keyboardGuideEnabled = computed(() => true)
 
 // ルートパラメータ取得
 const stageId = computed(() => Number(route.params['stage']) || 1)
-const levelId = computed(() => Number(route.params['level']) || 1)  
+const levelId = computed(() => Number(route.params['level']) || 1)
 const categoryId = computed(() => String(route.params['category'] || 'daily'))
+const substageId = computed(() => String(route.params['substage'] || '1') as '1' | '2')
 
 // ゲーム状態
 const gameStarted = ref(false)
@@ -196,6 +205,12 @@ const finalWPM = ref(0)
 const finalAccuracy = ref(0)
 const totalTime = ref(0)
 
+// 現在のWordContentまたはPhraseContent（MYフレーズ追加用）
+const currentRawContent = ref<any>(null)
+
+// SRSカードID（バックエンド統合用）
+const currentSRSCardId = ref<string | null>(null)
+
 // コンテンツ
 const currentContent = computed(() => {
   if (gameType.value === 'basic') {
@@ -212,7 +227,7 @@ const currentContent = computed(() => {
         targetWPM: stage.targetWpm,
         targetAccuracy: stage.targetAccuracy,
         requiredPhrases: stage.requiredPhrases,
-        hasAudio: false
+        hasAudio: true
       }
     }
   } else if (gameType.value === 'words') {
@@ -225,6 +240,7 @@ const currentContent = computed(() => {
     if (stageWords.length > 0) {
       const wordIndex = currentPhraseIndex.value % stageWords.length
       const currentWord = stageWords[wordIndex]
+      currentRawContent.value = currentWord // MYフレーズ追加用に保存
       return {
         title: `レベル${levelId.value} - ステージ${stageId.value}`,
         description: `${stageWords.length}個の英単語をタイピング`,
@@ -233,7 +249,7 @@ const currentContent = computed(() => {
         targetWPM: 25 + (levelId.value - 1) * 5,
         targetAccuracy: 90 + levelId.value,
         requiredPhrases: stageWords.length,
-        hasAudio: false
+        hasAudio: true
       }
     }
   } else if (gameType.value === 'phrases') {
@@ -242,10 +258,11 @@ const currentContent = computed(() => {
     const phrasesPerStage = 5
     const startIndex = (stageId.value - 1) * phrasesPerStage
     const stagePhrases = phrases.slice(startIndex, startIndex + phrasesPerStage)
-    
+
     if (stagePhrases.length > 0) {
       const phraseIndex = currentPhraseIndex.value % stagePhrases.length
       const currentPhrase = stagePhrases[phraseIndex]
+      currentRawContent.value = currentPhrase // MYフレーズ追加用に保存
       return {
         title: `${categoryId.value} - ステージ${stageId.value}`,
         description: `${stagePhrases.length}個の英語フレーズをタイピング`,
@@ -254,7 +271,45 @@ const currentContent = computed(() => {
         targetWPM: 30 + (currentPhrase?.difficulty || 1) * 5,
         targetAccuracy: 85 + (currentPhrase?.difficulty || 1) * 3,
         requiredPhrases: stagePhrases.length,
-        hasAudio: false
+        hasAudio: true
+      }
+    }
+  } else if (gameType.value === 'core') {
+    // コアフレーズモード: ステージ別のコアフレーズを取得（新システム）
+    const stagePhrases = contentStore.getCorePhrasesbyStage(stageId.value)
+
+    if (stagePhrases.length > 0) {
+      const phraseIndex = currentPhraseIndex.value % stagePhrases.length
+      const currentPhrase = stagePhrases[phraseIndex]
+      currentRawContent.value = currentPhrase // MYフレーズ追加用に保存
+      return {
+        title: `コアフレーズ - ステージ${stageId.value}`,
+        description: `${stagePhrases.length}個のコアフレーズをタイピング`,
+        english: currentPhrase?.english || '',
+        japanese: currentPhrase?.japanese || '',
+        targetWPM: 30 + (currentPhrase?.difficulty || 1) * 5,
+        targetAccuracy: 85 + (currentPhrase?.difficulty || 1) * 3,
+        requiredPhrases: stagePhrases.length,
+        hasAudio: true
+      }
+    }
+  } else if (gameType.value === 'core-substage') {
+    // コア構文サブステージモード: ステージとサブステージ（A/B）から10フレーズを取得
+    const substagePhrases = contentStore.getCorePhrasesbySubstage(stageId.value, substageId.value)
+
+    if (substagePhrases.length > 0) {
+      const phraseIndex = currentPhraseIndex.value % substagePhrases.length
+      const currentPhrase = substagePhrases[phraseIndex]
+      currentRawContent.value = currentPhrase // MYフレーズ追加用に保存
+      return {
+        title: `コア構文 ステージ${stageId.value}${substageId.value}`,
+        description: `${substagePhrases.length}個のコア構文フレーズをタイピング`,
+        english: currentPhrase?.english || '',
+        japanese: currentPhrase?.japanese || '',
+        targetWPM: 30 + (currentPhrase?.difficulty || 1) * 5,
+        targetAccuracy: 85 + (currentPhrase?.difficulty || 1) * 3,
+        requiredPhrases: substagePhrases.length,
+        hasAudio: true
       }
     }
   }
@@ -271,13 +326,6 @@ const currentContent = computed(() => {
   }
 })
 
-const progress = computed(() => {
-  if (totalPhrases.value === 0) return 0
-  // フレーズ進行 + 現在のフレーズ内進捗
-  const phraseProgress = (phrasesCompleted.value / totalPhrases.value) * 100
-  const currentPhraseProgress = currentText.value.length > 0 ? (currentIndex.value / currentText.value.length) * (100 / totalPhrases.value) : 0
-  return phraseProgress + currentPhraseProgress
-})
 
 const nextKey = computed(() => {
   if (currentIndex.value < currentText.value.length) {
@@ -292,7 +340,7 @@ const formatTime = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-const startGame = () => {
+const startGame = async () => {
   gameStarted.value = true
   gameCompleted.value = false
   currentText.value = currentContent.value.english || ''
@@ -301,7 +349,25 @@ const startGame = () => {
   elapsedTime.value = 0
   errorCount.value = 0
   startTime.value = Date.now()
-  
+
+  // 適応学習セッション開始
+  adaptiveLearning.startLearningSession(gameType.value)
+
+  // 🔥 SRSカード取得（認証済みの場合のみ）
+  if (isAuthenticated.value) {
+    try {
+      const contentId = gameType.value === 'basic' ? stageId.value :
+                       gameType.value === 'words' ? levelId.value :
+                       gameType.value === 'phrases' ? categoryId.value : stageId.value
+
+      const card = await getOrCreateCard(String(contentId), gameType.value)
+      currentSRSCardId.value = card.id
+    } catch (error) {
+      console.error('Failed to get SRS card:', error)
+      // エラーでも続行
+    }
+  }
+
   // フレーズ進行リセット
   currentPhraseIndex.value = 0
   phrasesCompleted.value = 0
@@ -324,13 +390,24 @@ const startGame = () => {
     const startIndex = (stageId.value - 1) * phrasesPerStage
     const stagePhrases = phrases.slice(startIndex, startIndex + phrasesPerStage)
     totalPhrases.value = stagePhrases.length
+  } else if (gameType.value === 'core') {
+    const stagePhrases = contentStore.getCorePhrasesbyStage(stageId.value)
+    totalPhrases.value = stagePhrases.length
+  } else if (gameType.value === 'core-substage') {
+    const substagePhrases = contentStore.getCorePhrasesbySubstage(stageId.value, substageId.value)
+    totalPhrases.value = substagePhrases.length
   }
   
+  // 自動読み上げ
+  setTimeout(() => {
+    playAudio()
+  }, 500)
+
   timer.value = window.setInterval(() => {
     elapsedTime.value++
     updateStats()
   }, 1000)
-  
+
   document.addEventListener('keypress', handleKeyPress)
 }
 
@@ -368,7 +445,7 @@ const updateStats = () => {
 
 const completePhraseOrGame = () => {
   phrasesCompleted.value++
-  
+
   // 10フレーズ完了したらゲーム完了
   if (phrasesCompleted.value >= totalPhrases.value) {
     completeGame()
@@ -378,28 +455,86 @@ const completePhraseOrGame = () => {
     currentIndex.value = 0
     hasError.value = false
     currentText.value = currentContent.value.english || ''
+
+    // 新しいフレーズの自動読み上げ
+    setTimeout(() => {
+      playAudio()
+    }, 500)
   }
 }
 
-const completeGame = () => {
+const completeGame = async () => {
   gameCompleted.value = true
-  
+
   if (timer.value) {
     clearInterval(timer.value)
     timer.value = null
   }
-  
+
   document.removeEventListener('keypress', handleKeyPress)
-  
+
   finalWPM.value = currentWPM.value
   finalAccuracy.value = currentAccuracy.value
   totalTime.value = elapsedTime.value
-  
+
+  // 適応学習システムにパフォーマンスデータを記録
+  const contentId = gameType.value === 'basic' ? stageId.value :
+                   gameType.value === 'words' ? levelId.value :
+                   gameType.value === 'phrases' ? categoryId.value : stageId.value
+
+  adaptiveLearning.recordPerformance({
+    wpm: finalWPM.value,
+    accuracy: finalAccuracy.value,
+    completionTime: totalTime.value,
+    contentType: gameType.value,
+    contentId: contentId,
+    errorPatterns: [], // TODO: 文字別エラー分析を後で追加
+    retryCount: 0 // TODO: 再挑戦回数の追跡を後で追加
+  })
+
   // gameStoreに統計データを保存
   gameStore.lastWPM = finalWPM.value
   gameStore.lastAccuracy = finalAccuracy.value
   gameStore.lastTime = totalTime.value
-  
+  gameStore.lastScore = Math.round((finalWPM.value * finalAccuracy.value) / 10)
+
+  // MYフレーズ追加用に現在のコンテンツを保存（英単語・フレーズ・コアフレーズ）
+  if (gameType.value === 'words' || gameType.value === 'phrases' || gameType.value === 'core' || gameType.value === 'core-substage') {
+    gameStore.lastPlayedContent = currentRawContent.value
+  }
+
+  // 🔥 バックエンドAPIに進捗記録（認証済みの場合のみ）
+  if (isAuthenticated.value) {
+    try {
+      // 進捗セッション記録
+      await recordSession({
+        contentType: gameType.value,
+        contentId: String(contentId),
+        wpm: finalWPM.value,
+        accuracy: finalAccuracy.value / 100,
+        durationSeconds: totalTime.value,
+        errorCount: errorCount.value,
+        completed: true
+      })
+
+      // SRS復習記録（カードIDがある場合）
+      if (currentSRSCardId.value) {
+        const quality = calculateQuality(finalAccuracy.value)
+        await recordReview(
+          currentSRSCardId.value,
+          quality,
+          totalTime.value * 1000, // ms単位に変換
+          finalAccuracy.value / 100,
+          finalWPM.value
+        )
+      }
+    } catch (error) {
+      console.error('Failed to record game session:', error)
+      // エラーでも続行
+      //（オフラインでも使える）
+    }
+  }
+
   // ゲームモードに応じてClear.vueに遷移
   if (gameType.value === 'basic') {
     router.push(`/clear/basic/${stageId.value}`)
@@ -407,12 +542,32 @@ const completeGame = () => {
     router.push(`/words/clear/${levelId.value}/${stageId.value}`)
   } else if (gameType.value === 'phrases') {
     router.push(`/phrases/clear/${categoryId.value}/${stageId.value}`)
+  } else if (gameType.value === 'core') {
+    router.push(`/core-stages/clear/${stageId.value}`)
+  } else if (gameType.value === 'core-substage') {
+    router.push(`/core-substages/clear/${stageId.value}/${substageId.value}`)
   }
 }
 
+// 品質スコア計算ヘルパー
+const calculateQuality = (accuracy: number): 1 | 2 | 3 | 4 | 5 => {
+  if (accuracy >= 95) return 5
+  if (accuracy >= 85) return 4
+  if (accuracy >= 70) return 3
+  if (accuracy >= 50) return 2
+  return 1
+}
+
 const playAudio = () => {
-  // 音声再生機能
-  console.log('Playing audio for:', currentContent.value.english)
+  if (currentContent.value.english) {
+    // Web Speech API を使用した音声読み上げ
+    const utterance = new SpeechSynthesisUtterance(currentContent.value.english)
+    utterance.lang = 'en-US'
+    utterance.rate = 0.8 // 少しゆっくり読む
+    utterance.pitch = 1.0
+    speechSynthesis.speak(utterance)
+    console.log('Playing audio for:', currentContent.value.english)
+  }
 }
 
 const retry = () => {
@@ -424,36 +579,84 @@ const goToNext = () => {
 }
 
 // 初期化
+// スペースキーでゲーム開始
+const handleSpaceToStart = (event: KeyboardEvent) => {
+  if (!gameStarted.value && event.code === 'Space') {
+    event.preventDefault()
+    startGame()
+  }
+}
+
 onMounted(() => {
+  // Prevent body scrolling when game is mounted
+  document.body.style.overflow = 'hidden'
+  document.documentElement.style.overflow = 'hidden'
+  
   contentStore.initializeBasicContent()
+  
+  // スペースキーでゲーム開始できるようにリスナー追加
+  window.addEventListener('keydown', handleSpaceToStart)
 })
 
 onUnmounted(() => {
+  // Restore body scrolling when leaving game
+  document.body.style.overflow = ''
+  document.documentElement.style.overflow = ''
+  
   if (timer.value) {
     clearInterval(timer.value)
   }
   document.removeEventListener('keypress', handleKeyPress)
+  window.removeEventListener('keydown', handleSpaceToStart)
 })
 </script>
 
 <style lang="scss" scoped>
 .game-page {
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+  touch-action: none;
+  padding-top: 80px; // 固定値で大きな上部余白を追加
+}
+
+.game-header-wrapper {
+  flex: 0 0 auto;
+  min-height: 40px;
+
+  .page-header {
+    max-width: 1200px;           // AppHeaderと同じ幅制限
+    margin: 0 auto;              // 中央寄せ
+    padding: var(--spacing-md) var(--space-md); // 上下+左右パディング
+  }
 }
 
 .game-container {
+  flex: 1;
+  min-height: 0; // Important for flexbox overflow
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-xl);
+  padding: 0 var(--spacing-lg);
+  width: 100%;
 }
 
 .start-screen,
 .complete-screen {
   text-align: center;
-  padding: var(--spacing-3xl);
+  padding: var(--spacing-xl) var(--spacing-lg); // 上下パディングを削減
   background: var(--bg-secondary);
   border-radius: var(--radius-xl);
+  max-height: 100%;
+  overflow: auto; // 必要時のみスクロール
 }
 
 .game-info {
@@ -500,7 +703,14 @@ onUnmounted(() => {
 .game-screen {
   background: var(--bg-secondary);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-sm); // Fixed small padding
+  flex: 1;
+  min-height: 0; // Critical for flex overflow
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  gap: 20px; // 50px → 20px に削減
 }
 
 .game-header {
@@ -567,32 +777,75 @@ onUnmounted(() => {
 
 .audio-controls {
   position: absolute;
-  top: var(--spacing-xl);
-  right: var(--spacing-xl);
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: 10;
 }
 
-.typing-area {
+// 📝 直接入力エリア
+.direct-input-area {
   background: var(--bg-tertiary);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-2xl);
-  margin-bottom: var(--spacing-2xl);
-  min-height: 200px;
+  padding: var(--spacing-lg);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10vh; // Fixed height using viewport
+  max-height: 100px;
+  min-height: 80px;
 }
 
-.original-text {
-  margin-bottom: var(--spacing-lg);
-  text-align: center;
+// 🈁 和訳表示エリア
+.translation-area {
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 6vh; // Fixed height using viewport
+  max-height: 60px;
+  min-height: 40px;
+  border: 1px solid var(--border-color);
 }
 
 .japanese-text {
   font-size: var(--text-lg);
   color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
 }
 
+
 .typing-text {
-  font-size: var(--text-2xl);
-  line-height: 2;
+  font-size: var(--text-3xl);
+  line-height: 1.6;
   font-family: monospace;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width: 100%;
+  
+  &.start-message {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    
+    .start-instruction {
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+    
+    .start-spacebar {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  }
 }
 
 .char {
@@ -666,13 +919,87 @@ onUnmounted(() => {
   gap: var(--spacing-lg);
 }
 
+// 🎹 指ガイド付きキーボード (可変高さ)
 .keyboard-section {
-  margin-top: var(--spacing-2xl);
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  max-height: 50vh; // Fixed max height to prevent overflow
 }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
+}
+
+// 音声ボタンセクション
+.audio-section {
+  display: flex;
+  justify-content: flex-end;
+  margin: var(--spacing-lg) 0;
+  padding: 0 var(--spacing-md);
+}
+
+.audio-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  border: none;
+  border-radius: var(--radius-full);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 195, 247, 0.4);
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(79, 195, 247, 0.3);
+  }
+}
+
+.audio-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.audio-text {
+  font-family: var(--font-primary);
+  letter-spacing: 0.5px;
+}
+
+.header-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+  min-width: 80px;
+}
+
+.progress-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 @keyframes shake {
@@ -681,20 +1008,9 @@ onUnmounted(() => {
   75% { transform: translateX(5px); }
 }
 
-// レスポンシブ対応
-@media (max-width: 768px) {
-  .game-header {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  
-  .final-stats {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .complete-actions {
-    flex-direction: column;
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
+
 </style>

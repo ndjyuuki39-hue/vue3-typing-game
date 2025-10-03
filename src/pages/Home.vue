@@ -7,6 +7,9 @@
         subtitle="あなたの英語タイピングスキルを向上させましょう"
       />
 
+      <!-- AI Learning Dashboard -->
+      <LearningDashboard v-if="userStore.progress.totalGames > 0" />
+
       <!-- Learning Menu -->
       <div class="learning-menu">
         <!-- Basic Typing Practice -->
@@ -44,6 +47,37 @@
               size="md"
             >
               {{ t('home.actions.review') }}
+            </PrimaryButton>
+          </template>
+        </LearningCard>
+
+        <!-- MYフレーズ -->
+        <LearningCard
+          @click="goToMyPhrases"
+          title="MYフレーズ"
+          description="お気に入りの英単語・フレーズで自分専用の練習"
+          icon="⭐"
+          :progress="favoritesProgress"
+          :stats="{
+            total: `${favoritesStore['totalCount']}個登録`,
+            categories: `${activeCategoryCount}カテゴリー`
+          }"
+          variant="accent"
+          class="my-phrases-card"
+        >
+          <template #badge>
+            <ProgressBadge
+              :value="favoritesProgress"
+              label="MYフレーズ進捗"
+            />
+          </template>
+          
+          <template #action>
+            <PrimaryButton
+              @click.stop="goToMyPhrases"
+              size="md"
+            >
+              MYフレーズ管理
             </PrimaryButton>
           </template>
         </LearningCard>
@@ -99,13 +133,45 @@
               :label="t('home.progressLabels.phraseProgress')"
             />
           </template>
-          
+
           <template #action>
             <PrimaryButton
               @click.stop="goToPhraseCategory"
               size="md"
             >
               {{ t('home.actions.learnPhrases') }}
+            </PrimaryButton>
+          </template>
+        </LearningCard>
+
+        <!-- コア構文マスター (拡張版) -->
+        <LearningCard
+          @click="goToCoreStages"
+          title="コア構文マスター"
+          description="基本文型から実用表現まで、段階的に英語構文を習得 (260フレーズ)"
+          icon="📚"
+          :progress="corePhrasesProgress"
+          :stats="{
+            stages: `${coreCompletedStages}/13 ステージ`,
+            phrases: '260フレーズ収録'
+          }"
+          variant="primary"
+          class="core-syntax-card"
+          :isNew="true"
+        >
+          <template #badge>
+            <ProgressBadge
+              :value="corePhrasesProgress"
+              label="コア構文進捗"
+            />
+          </template>
+
+          <template #action>
+            <PrimaryButton
+              @click.stop="goToCoreStages"
+              size="md"
+            >
+              🚀 新システム体験
             </PrimaryButton>
           </template>
         </LearningCard>
@@ -142,33 +208,6 @@
         </div>
       </div>
 
-      <!-- Quick Start Actions -->
-      <div class="quick-actions">
-        <h2 class="section-title">クイックスタート</h2>
-        <div class="actions-grid">
-          <QuickActionCard
-            @click="goToRandomBasicStage"
-            title="ランダム練習"
-            description="基本タイピングからランダムに選択"
-            icon="🎲"
-            color="var(--accent-blue)"
-          />
-          <QuickActionCard
-            @click="goToRandomWords"
-            title="英単語クイック"
-            description="レベル1の単語でサクッと練習"
-            icon="⚡"
-            color="var(--accent-green)"
-          />
-          <QuickActionCard
-            @click="goToSettings"
-            title="設定"
-            description="テーマや言語を変更"
-            icon="⚙️"
-            color="var(--neutral-600)"
-          />
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -178,21 +217,21 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/composables/useI18n'
 import { useUserStore } from '@/stores/user'
-import { useSettingsStore } from '@/stores/settings'
+import { useFavoritesStore } from '@/stores/favorites'
 
 // Components
 import PageHeader from '@/components/molecules/PageHeader.vue'
 import LearningCard from '@/components/organisms/LearningCard.vue'
+import LearningDashboard from '@/components/organisms/LearningDashboard.vue'
 import ProgressBadge from '@/components/atoms/ProgressBadge.vue'
 import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
 import SecondaryButton from '@/components/atoms/SecondaryButton.vue'
 import StatsCard from '@/components/molecules/StatsCard.vue'
-import QuickActionCard from '@/components/molecules/QuickActionCard.vue'
 
 const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
-const settingsStore = useSettingsStore()
+const favoritesStore = useFavoritesStore()
 
 // Navigation methods
 const goToBasicTyping = (): void => {
@@ -212,27 +251,12 @@ const goToPhraseCategory = (): void => {
   router.push('/phrases/category')
 }
 
-const goToSettings = (): void => {
-  settingsStore.openSettings()
+const goToCoreStages = (): void => {
+  router.push('/core-stages')
 }
 
-// Quick action methods
-const goToRandomBasicStage = (): void => {
-  const completedStages = userStore.progress.basicTyping.completedStages
-  const availableStages = Array.from({ length: 12 }, (_, i) => i + 1)
-    .filter(stage => completedStages.includes(stage))
-  
-  if (availableStages.length === 0) {
-    // If no completed stages, go to stage 1
-    router.push('/game/basic/1')
-  } else {
-    const randomStage = availableStages[Math.floor(Math.random() * availableStages.length)]
-    router.push(`/game/basic/${randomStage}`)
-  }
-}
-
-const goToRandomWords = (): void => {
-  router.push('/words/1')
+const goToMyPhrases = (): void => {
+  router.push('/my-phrases')
 }
 
 // Utility methods
@@ -245,6 +269,27 @@ const formatPlayTime = (seconds: number): string => {
   }
   return `${minutes}分`
 }
+
+// Computed for MY Phrases
+const favoritesProgress = computed(() => {
+  const stats = favoritesStore.favoriteStats
+  return stats.totalItems > 0 ? Math.min((stats.averageAccuracy || 0), 100) : 0
+})
+
+const activeCategoryCount = computed(() => {
+  return favoritesStore.favoriteCategories.filter(cat => cat.count > 0).length
+})
+
+// Core Phrases Progress (13ステージシステム)
+const corePhrasesProgress = computed(() => {
+  const completedStages = userStore.progress.core.completedStages.length
+  const totalStages = 13 // Enhanced system with 13 stages
+  return totalStages > 0 ? Math.round((completedStages / totalStages) * 100) : 0
+})
+
+const coreCompletedStages = computed(() => {
+  return userStore.progress.core.completedStages.length
+})
 </script>
 
 <style lang="scss" scoped>
@@ -263,8 +308,7 @@ const formatPlayTime = (seconds: number): string => {
   }
 }
 
-.basic-typing-card,
-.english-learning-card {
+.basic-typing-card {
   transition: all var(--transition-normal);
   
   &:hover {
@@ -292,15 +336,6 @@ const formatPlayTime = (seconds: number): string => {
   gap: var(--space-lg);
 }
 
-.quick-actions {
-  margin-bottom: var(--space-2xl);
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-lg);
-}
 
 // Responsive adjustments
 @media (max-width: 768px) {
@@ -310,10 +345,6 @@ const formatPlayTime = (seconds: number): string => {
   
   .activity-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .actions-grid {
-    grid-template-columns: 1fr;
   }
 }
 

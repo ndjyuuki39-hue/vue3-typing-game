@@ -1,15 +1,28 @@
-import { defineConfig } from 'eslint-define-config'
 import js from '@eslint/js'
 import vue from 'eslint-plugin-vue'
 import typescript from '@typescript-eslint/eslint-plugin'
 import typescriptParser from '@typescript-eslint/parser'
 import prettier from 'eslint-plugin-prettier'
 import prettierConfig from 'eslint-config-prettier'
+import vueParser from 'vue-eslint-parser'
 
-export default defineConfig([
+export default [
   // 基本設定
   js.configs.recommended,
-  
+
+  // 無視設定を最初に配置
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '*.config.js',
+      'scripts/**',
+      '.gitignore',
+      'coverage/**',
+      'playwright-report/**'
+    ]
+  },
+
   // TypeScript設定
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.vue'],
@@ -27,7 +40,6 @@ export default defineConfig([
     },
     rules: {
       // TypeScript 厳格化 - レガシーコード禁止
-      '@typescript-eslint/no-any': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
@@ -38,12 +50,12 @@ export default defineConfig([
       '@typescript-eslint/prefer-optional-chain': 'error'
     }
   },
-  
+
   // Vue.js設定
   {
     files: ['**/*.vue'],
     languageOptions: {
-      parser: vue.parser,
+      parser: vueParser,
       parserOptions: {
         parser: typescriptParser,
         ecmaVersion: 'latest',
@@ -55,22 +67,19 @@ export default defineConfig([
     },
     rules: {
       ...vue.configs['vue3-recommended'].rules,
-      
+
       // Vue3 Composition API 強制 - レガシー禁止
       'vue/component-definition-name-casing': ['error', 'PascalCase'],
-      'vue/composition-api-destructuring-import': 'error',
       'vue/no-deprecated-v-on-native-modifier': 'error',
       'vue/no-deprecated-v-bind-sync': 'error',
       'vue/no-deprecated-slot-attribute': 'error',
-      'vue/prefer-import-from-vue': 'error',
-      
-      // Options API 禁止
-      'vue/no-options-api': 'error'
+      'vue/prefer-import-from-vue': 'error'
     }
   },
-  
+
   // JavaScript レガシー禁止
   {
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.vue'],
     rules: {
       'no-var': 'error',
       'prefer-const': 'error',
@@ -78,12 +87,14 @@ export default defineConfig([
       'prefer-template': 'error',
       'prefer-destructuring': 'error',
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-undef': 'off' // TypeScriptが処理
     }
   },
-  
+
   // Prettier統合
   {
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.vue'],
     plugins: {
       prettier
     },
@@ -91,15 +102,5 @@ export default defineConfig([
       ...prettierConfig.rules,
       'prettier/prettier': 'error'
     }
-  },
-  
-  // 無視設定
-  {
-    ignores: [
-      'dist/**',
-      'node_modules/**',
-      '*.config.js',
-      'scripts/**'
-    ]
   }
-])
+]

@@ -14,11 +14,14 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "vue-tsc --noEmit",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "legacy-check": "node scripts/legacy-detector.js"
   },
   "dependencies": {
+    "@trpc/client": "^11.6.0",
+    "@trpc/server": "^11.6.0",
+    "axios": "^1.12.2",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
     "vue-i18n": "^9.13.1",
@@ -49,6 +52,7 @@
     "vite": "^5.3.1",
     "vite-plugin-pwa": "^0.20.0",
     "vitest": "^1.6.0",
+    "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^2.0.21"
   },
   "pnpm": {

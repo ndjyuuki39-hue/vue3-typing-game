@@ -1,6 +1,8 @@
 <template>
   <div class="phrase-stages-page">
-    <PageHeader :title="categoryTitle" :showBack="true" />
+    <div class="page-header-wrapper">
+      <PageHeader :title="categoryTitle" :showBack="true" />
+    </div>
     
     <div class="content-container">
       <div class="category-info">
@@ -10,6 +12,13 @@
         <div class="category-stats">
           <span>{{ t('phrases.stats.totalPhrases') }}: {{ t('phrases.stages.totalPhrasesFormat', { count: totalPhrases }) }}</span>
           <span>{{ t('phrases.stats.progress') }}: {{ t('phrases.stages.progressFormat', { completed: completedStages, total: totalStages }) }}</span>
+        </div>
+        
+        <!-- SRSベースのランダム学習ボタン -->
+        <div v-if="completedStages > 0" class="practice-buttons">
+          <PrimaryButton @click="showSRSModal = true" variant="accent" size="lg">
+            🧠 ランダム学習
+          </PrimaryButton>
         </div>
       </div>
 
@@ -62,20 +71,31 @@
         </div>
       </div>
     </div>
+
+    <!-- SRS Game Modal -->
+    <SRSGameModal
+      v-if="showSRSModal"
+      type="phrases"
+      @close="showSRSModal = false"
+      @startGame="startSRSGame"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useContentStore } from '@/stores/content'
+import { useSRSStore } from '@/stores/srs'
 import PageHeader from '@/components/molecules/PageHeader.vue'
+import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
 import ProgressBar from '@/components/atoms/ProgressBar.vue'
 import CheckIcon from '@/components/atoms/CheckIcon.vue'
 import LockIcon from '@/components/atoms/LockIcon.vue'
 import PlayIcon from '@/components/atoms/PlayIcon.vue'
+import SRSGameModal from '@/components/organisms/SRSGameModal.vue'
 
 interface PhraseStage {
   id: number
@@ -87,12 +107,13 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const contentStore = useContentStore()
+const srsStore = useSRSStore()
 
 // URLパラメータからカテゴリを取得
 const categoryId = computed(() => String(route.params.category) || 'daily')
 
 const categoryInfo = computed(() => {
-  const categories = {
+  const categories: Record<string, { title: string; description: string; icon: string }> = {
     daily: {
       title: '日常会話',
       description: '挨拶や感情表現など、毎日使える基本フレーズ',
@@ -151,19 +172,22 @@ const totalStages = computed(() => stages.value.length)
 // 進捗管理
 const completedStages = computed(() => {
   const key = `phraseCategory_${categoryId.value}`
-  return userStore.progress.phrases[key]?.completedStages?.length || 0
+  const phraseProgress = userStore.progress?.phrases as Record<string, any>
+  return phraseProgress?.[key]?.completedStages?.length || 0
 })
 
 const isStageUnlocked = (stageId: number): boolean => {
   if (stageId === 1) return true
   const key = `phraseCategory_${categoryId.value}`
-  const progress = userStore.progress.phrases[key]
+  const phraseProgress = userStore.progress?.phrases as Record<string, any>
+  const progress = phraseProgress?.[key]
   return progress?.completedStages?.includes(stageId - 1) || false
 }
 
 const isStageCompleted = (stageId: number): boolean => {
   const key = `phraseCategory_${categoryId.value}`
-  const progress = userStore.progress.phrases[key]
+  const phraseProgress = userStore.progress?.phrases as Record<string, any>
+  const progress = phraseProgress?.[key]
   return progress?.completedStages?.includes(stageId) || false
 }
 
@@ -180,14 +204,16 @@ const isCurrentStage = (stageId: number): boolean => {
 const getStageProgress = (stageId: number): number => {
   if (isStageCompleted(stageId)) return 100
   const key = `phraseCategory_${categoryId.value}`
-  const progress = userStore.progress.phrases[key]
+  const phraseProgress = userStore.progress?.phrases as Record<string, any>
+  const progress = phraseProgress?.[key]
   if (progress?.currentStage === stageId) return 50
   return 0
 }
 
 const getStageStats = (stageId: number) => {
   const key = `phraseCategory_${categoryId.value}`
-  const progress = userStore.progress.phrases[key]
+  const phraseProgress = userStore.progress?.phrases as Record<string, any>
+  const progress = phraseProgress?.[key]
   return {
     bestWPM: progress?.stageBestWpm?.[stageId] || 0,
     accuracy: progress?.stageBestAccuracy?.[stageId] || 0
@@ -203,8 +229,29 @@ const handleStageClick = (stage: PhraseStage) => {
   router.push(`/phrases/game/${categoryId.value}/${stage.id}`)
 }
 
+// SRS機能
+const showSRSModal = ref(false)
+
+const startSRSGame = (config: { type: string; questionCount: number; reviewRatio: number; mode: string; studySet: unknown[] }) => {
+  router.push({
+    name: 'RandomPhraseGame',
+    params: {
+      category: categoryId.value
+    },
+    query: {
+      srs: 'true',
+      mode: config.mode,
+      count: config.questionCount.toString(),
+      type: config.type
+    }
+  })
+}
+
 onMounted(() => {
   contentStore.initializePhrasesContent()
+  // このカテゴリのフレーズをSRSに追加
+  const categoryPhrases = contentStore.getPhrasesByCategory(categoryId.value)
+  srsStore.initializeContentCards(categoryPhrases, 'phrase')
 })
 </script>
 
@@ -256,6 +303,18 @@ onMounted(() => {
       padding: var(--spacing-sm) var(--spacing-lg);
       background: var(--bg-tertiary);
       border-radius: var(--radius-md);
+    }
+  }
+
+  .practice-buttons {
+    margin-top: var(--spacing-lg);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      justify-content: center;
     }
   }
 }
@@ -387,6 +446,15 @@ onMounted(() => {
   }
   50% {
     border-color: var(--accent-pink);
+  }
+}
+
+// Page header wrapper for consistent layout
+.page-header-wrapper {
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md) var(--space-md);
   }
 }
 

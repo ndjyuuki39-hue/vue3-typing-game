@@ -30,9 +30,11 @@ defineProps<Props>()
   align-items: center;
   justify-content: space-between;
   gap: var(--space-lg);
-  margin-bottom: var(--space-2xl);
-  padding-bottom: var(--space-lg);
+  margin-bottom: 0; // 下マージンを削除して均等に
+  padding-bottom: var(--space-sm); // パディングを最小限に
   border-bottom: 2px solid var(--border-color);
+  flex-shrink: 0; // 縮小を防ぐ
+  min-height: 60px; // 最小高さを設定
 }
 
 .header-content {
@@ -40,14 +42,10 @@ defineProps<Props>()
 }
 
 .page-title {
-  font-size: var(--text-3xl);
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--space-sm);
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0; // 上下マージンを削除して均等に
 }
 
 .page-subtitle {

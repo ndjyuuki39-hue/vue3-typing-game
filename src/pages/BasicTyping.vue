@@ -1,6 +1,8 @@
 <template>
   <div class="basic-typing-page">
-    <PageHeader :title="t('basicTyping.title')" :showBack="true" />
+    <div class="page-header-wrapper">
+      <PageHeader :title="t('basicTyping.title')" :showBack="true" />
+    </div>
     
     <div class="content-container">
       <div class="stage-grid">
@@ -409,6 +411,15 @@ onMounted(() => {
   .stage-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
+  }
+}
+
+// Page header wrapper for consistent layout
+.page-header-wrapper {
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md) var(--space-md);
   }
 }
 </style>

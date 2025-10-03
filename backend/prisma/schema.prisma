@@ -1,0 +1,165 @@
+// Prisma Schema for Vue3 Typing Game
+// SQLite を使用（開発環境）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// User Model
+// ============================================================================
+
+model User {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  email         String   @unique
+  passwordHash  String
+  displayName   String?
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLoginAt   DateTime?
+
+  // Relations
+  progress      UserProgress[]
+  sessions      GameSession[]
+  srsCards      SRSCard[]
+  favorites     Favorite[]
+  dailyStats    DailyStats[]
+
+  @@map("users")
+}
+
+// ============================================================================
+// User Progress Model
+// ============================================================================
+
+model UserProgress {
+  id              String   @id @default(uuid())
+  userId          String
+  contentType     String
+  contentId       String
+  level           Int?
+  stage           Int?
+  completed       Boolean  @default(false)
+  bestWpm         Int      @default(0)
+  bestAccuracy    Float    @default(0)
+  totalAttempts   Int      @default(0)
+  totalTimeSeconds Int     @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
+  @@map("user_progress")
+}
+
+// ============================================================================
+// Game Session Model
+// ============================================================================
+
+model GameSession {
+  id              String   @id @default(uuid())
+  userId          String
+  contentType     String
+  contentId       String
+  wpm             Int
+  accuracy        Float
+  durationSeconds Int
+  errorCount      Int      @default(0)
+  completed       Boolean  @default(false)
+  startedAt       DateTime
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@map("game_sessions")
+}
+
+// ============================================================================
+// SRS Card Model (Spaced Repetition System)
+// ============================================================================
+
+model SRSCard {
+  id                  String   @id @default(uuid())
+  userId              String
+  contentType         String
+  contentId           String
+
+  // SRS Algorithm Parameters
+  easeFactor          Float    @default(2.5)
+  intervalDays        Int      @default(0)
+  repetitions         Int      @default(0)
+  isNew               Boolean  @default(true)
+
+  // Statistics
+  totalReviews        Int      @default(0)
+  correctReviews      Int      @default(0)
+  lastAccuracy        Float    @default(0)
+  averageResponseTime Int      @default(0)
+
+  // Schedule
+  lastReviewedAt      DateTime?
+  nextReviewAt        DateTime
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@index([userId, nextReviewAt])
+  @@map("srs_cards")
+}
+
+// ============================================================================
+// Favorite Model
+// ============================================================================
+
+model Favorite {
+  id          String   @id @default(uuid())
+  userId      String
+  contentType String
+  contentId   String
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@map("favorites")
+}
+
+// ============================================================================
+// Daily Stats Model (Aggregated Statistics)
+// ============================================================================
+
+model DailyStats {
+  id                    String   @id @default(uuid())
+  userId                String
+  date                  DateTime
+  totalSessions         Int      @default(0)
+  totalTimeSeconds      Int      @default(0)
+  totalCharactersTyped  Int      @default(0)
+  averageWpm            Float    @default(0)
+  averageAccuracy       Float    @default(0)
+  newCardsLearned       Int      @default(0)
+  cardsReviewed         Int      @default(0)
+  createdAt             DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_stats")
+}

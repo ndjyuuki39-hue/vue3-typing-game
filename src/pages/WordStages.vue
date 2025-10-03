@@ -1,6 +1,8 @@
 <template>
   <div class="word-stages-page">
-    <PageHeader :title="levelTitle" :showBack="true" />
+    <div class="page-header-wrapper">
+      <PageHeader :title="levelTitle" :showBack="true" />
+    </div>
     
     <div class="content-container">
       <div class="level-info">
@@ -9,6 +11,13 @@
         <div class="level-stats">
           <span>{{ t('words.stats.totalWords') }}: {{ t('words.stages.totalWordsFormat', { count: totalWords }) }}</span>
           <span>{{ t('words.stats.progress') }}: {{ t('words.stages.progressFormat', { completed: completedStages, total: totalStages }) }}</span>
+        </div>
+        
+        <!-- SRSベースのランダム学習ボタン -->
+        <div v-if="completedStages > 0" class="practice-buttons">
+          <PrimaryButton @click="showSRSModal = true" variant="accent" size="lg">
+            🧠 ランダム学習
+          </PrimaryButton>
         </div>
       </div>
 
@@ -61,20 +70,31 @@
         </div>
       </div>
     </div>
+
+    <!-- SRS Game Modal -->
+    <SRSGameModal
+      v-if="showSRSModal"
+      type="words"
+      @close="showSRSModal = false"
+      @startGame="startSRSGame"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useContentStore } from '@/stores/content'
+import { useSRSStore } from '@/stores/srs'
 import PageHeader from '@/components/molecules/PageHeader.vue'
+import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
 import ProgressBar from '@/components/atoms/ProgressBar.vue'
 import CheckIcon from '@/components/atoms/CheckIcon.vue'
 import LockIcon from '@/components/atoms/LockIcon.vue'
 import PlayIcon from '@/components/atoms/PlayIcon.vue'
+import SRSGameModal from '@/components/organisms/SRSGameModal.vue'
 
 interface WordStage {
   id: number
@@ -86,6 +106,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const contentStore = useContentStore()
+const srsStore = useSRSStore()
 
 // URLパラメータからレベルを取得
 const levelId = computed(() => Number(route.params.level) || 1)
@@ -138,7 +159,7 @@ const isStageUnlocked = (stageId: number): boolean => {
   
   // デバッグ用ログ
   console.log(`🔍 isStageUnlocked(${stageId}): key=${key}`, progress)
-  console.log(`🔍 completedStages:`, progress?.completedStages)
+  console.log(`🔍 completedStages:`, progress?.completedStages ? [...progress.completedStages] : [])
   console.log(`🔍 looking for stage ${stageId - 1}:`, progress?.completedStages?.includes(stageId - 1))
   
   return progress?.completedStages?.includes(stageId - 1) || false
@@ -186,8 +207,30 @@ const handleStageClick = (stage: WordStage) => {
   router.push(`/words/game/${levelId.value}/${stage.id}`)
 }
 
+// SRS機能
+const showSRSModal = ref(false)
+
+const startSRSGame = (config: { type: string; questionCount: number; reviewRatio: number; mode: string; studySet: unknown[] }) => {
+  router.push({
+    name: 'RandomWordGame',
+    params: {
+      level: levelId.value.toString()
+    },
+    query: {
+      srs: 'true',
+      mode: config.mode,
+      count: config.questionCount.toString(),
+      type: config.type
+    }
+  })
+}
+
+
 onMounted(() => {
   contentStore.initializeWordsContent()
+  // このレベルの単語をSRSに追加
+  const levelWords = contentStore.getWordsByLevel(levelId.value)
+  srsStore.initializeContentCards(levelWords, 'word')
 })
 </script>
 
@@ -234,6 +277,18 @@ onMounted(() => {
       padding: var(--spacing-sm) var(--spacing-lg);
       background: var(--bg-tertiary);
       border-radius: var(--radius-md);
+    }
+  }
+
+  .practice-buttons {
+    margin-top: var(--spacing-lg);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      justify-content: center;
     }
   }
 }
@@ -365,6 +420,15 @@ onMounted(() => {
   }
   50% {
     border-color: var(--accent-purple);
+  }
+}
+
+// Page header wrapper for consistent layout
+.page-header-wrapper {
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md) var(--space-md);
   }
 }
 

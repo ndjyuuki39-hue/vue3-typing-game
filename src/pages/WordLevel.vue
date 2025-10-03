@@ -1,6 +1,8 @@
 <template>
   <div class="word-level-page">
-    <PageHeader title="英単語レベル選択" :showBack="true" />
+    <div class="page-header-wrapper">
+      <PageHeader title="英単語レベル選択" :showBack="true" />
+    </div>
     
     <div class="content-container">
       <div class="level-intro">
@@ -117,8 +119,7 @@ const levels = computed(() => [
 ])
 
 const isLevelUnlocked = (levelId: number): boolean => {
-  if (levelId === 1) return true
-  return userStore.progress.words.completedLevels.includes(levelId - 1)
+  return true // 全レベルを最初から解放
 }
 
 const isLevelCompleted = (levelId: number): boolean => {
@@ -359,6 +360,15 @@ onMounted(() => {
   }
   50% {
     border-color: var(--accent-purple);
+  }
+}
+
+// Page header wrapper for consistent layout
+.page-header-wrapper {
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md) var(--space-md);
   }
 }
 

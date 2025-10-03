@@ -3,11 +3,11 @@ export interface RouteMeta {
   title?: string
   hideHeader?: boolean
   requiresAuth?: boolean
-  unitType?: 'basic' | 'words' | 'phrases'
+  unitType?: 'basic' | 'words' | 'phrases' | 'core' | 'random'
 }
 
 // Game Types
-export type GameType = 'basic' | 'words' | 'phrases'
+export type GameType = 'basic' | 'words' | 'phrases' | 'core' | 'random'
 export type GameState = 'ready' | 'playing' | 'paused' | 'completed' | 'failed'
 
 export interface GameConfig {
@@ -67,9 +67,48 @@ export interface PhraseContent {
   id: string
   english: string
   japanese: string
-  category: 'daily' | 'business' | 'travel' | 'shopping' | 'restaurant' | 'emergency'
+  category: 'daily' | 'business' | 'travel' | 'shopping' | 'restaurant' | 'emergency' | 'core' |
+    'core1' | 'core2' | 'core3' | 'core4' | 'core5' | 'core6' | 'core7' | 'core8' | 'core9' | 'core10' | 'core11' | 'core12' | 'core13'
   situation: string
   difficulty: 1 | 2 | 3
+}
+
+// Favorite/My Phrase Types
+export interface FavoriteItem {
+  id: string
+  type: 'word' | 'phrase'
+  category: string // 'word-level1', 'word-level2', 'phrase-daily', etc.
+  content: WordContent | PhraseContent
+  addedAt: string
+  lastPracticed?: string
+  practiceCount: number
+  bestWpm?: number
+  bestAccuracy?: number
+}
+
+export interface FavoriteCategory {
+  id: string
+  label: string
+  icon: string
+  count: number
+  items: FavoriteItem[]
+}
+
+export interface FavoriteStats {
+  totalItems: number
+  totalPractices: number
+  averageWpm: number
+  averageAccuracy: number
+  lastPracticeDate?: string
+}
+
+export type PracticeMode = 'quick' | 'normal' | 'long' | 'marathon'
+
+export interface PracticeConfig {
+  mode: PracticeMode
+  questionCount: number
+  categories: string[]
+  smartMode?: boolean // 苦手優先出題
 }
 
 // User Types

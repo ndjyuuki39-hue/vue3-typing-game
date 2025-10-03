@@ -14,16 +14,6 @@
         <nav class="header-nav">
           <!-- Back Button -->
           <BackButton v-if="showBackButton" />
-          
-          <!-- Home Button -->
-          <IconButton
-            @click="goHome"
-            :aria-label="t('navigation.home')"
-            variant="ghost"
-            size="md"
-          >
-            <HomeIcon />
-          </IconButton>
         </nav>
 
         <!-- Actions -->
@@ -87,7 +77,6 @@ import BackButton from '@/components/atoms/BackButton.vue'
 import IconButton from '@/components/atoms/IconButton.vue'
 import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
 import ProgressBar from '@/components/atoms/ProgressBar.vue'
-import HomeIcon from '@/components/atoms/HomeIcon.vue'
 import SettingsIcon from '@/components/atoms/SettingsIcon.vue'
 import LogoutIcon from '@/components/atoms/LogoutIcon.vue'
 
@@ -106,6 +95,7 @@ const showBackButton = computed(() => {
     '/phrases',
     '/basic-typing/lesson',
     '/basic-typing/game',
+    '/game/basic',  // 基本タイピング練習のゲーム画面
     '/words/level',
     '/words/game',
     '/phrases/category',
@@ -118,9 +108,6 @@ const showBackButton = computed(() => {
 })
 
 // Methods
-const goHome = (): void => {
-  router.push('/home')
-}
 
 const goToLogin = (): void => {
   router.push('/login')

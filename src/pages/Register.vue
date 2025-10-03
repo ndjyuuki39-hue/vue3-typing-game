@@ -86,19 +86,18 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useAuth } from '@/composables/useAuth'
 import AppLogo from '@/components/atoms/AppLogo.vue'
 import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
 
 const { t } = useI18n()
 const router = useRouter()
-const userStore = useUserStore()
+const { register, loading: isLoading } = useAuth()
 
 const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
-const isLoading = ref(false)
 
 const passwordStrength = computed(() => {
   const pwd = password.value
@@ -140,22 +139,15 @@ const canSubmit = computed(() => {
 
 const handleRegister = async () => {
   if (!canSubmit.value) return
-  
-  isLoading.value = true
-  
+
   try {
-    await userStore.register({
-      name: name.value,
-      email: email.value,
-      password: password.value
-    })
-    
+    // nameをusernameとして、emailも一緒に送信
+    await register(name.value, email.value, password.value)
+
     router.push('/home')
   } catch (error) {
     console.error('Registration failed:', error)
-    // エラーハンドリング
-  } finally {
-    isLoading.value = false
+    // TODO: エラーメッセージ表示
   }
 }
 </script>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Progress Checker</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+        pre { background: #2a2a2a; padding: 15px; border-radius: 5px; }
+        h2 { color: #4fc3f7; }
+        .empty { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <h1>🎮 English Typing Game - 進捗状況</h1>
+    <div id="output"></div>
+    <script>
+        const progress = localStorage.getItem('english-typing-game-progress');
+        const output = document.getElementById('output');
+        
+        if (progress) {
+            const data = JSON.parse(progress);
+            
+            let html = '<h2>📊 保存されている進捗データ:</h2>';
+            
+            // 基本タイピング
+            if (data.basicTyping) {
+                html += '<h3>基本タイピング</h3>';
+                html += '<pre>';
+                html += `現在ステージ: ${data.basicTyping.currentStage || 1}\n`;
+                html += `クリア済み: ${data.basicTyping.completedStages?.join(', ') || 'なし'}\n`;
+                html += '</pre>';
+            }
+            
+            // 英単語
+            if (data.words) {
+                html += '<h3>英単語</h3>';
+                for (const key in data.words) {
+                    if (key.startsWith('wordLevel')) {
+                        const level = key.replace('wordLevel', '');
+                        html += `<h4>レベル ${level}</h4>`;
+                        html += '<pre>';
+                        html += `クリア済みステージ: ${data.words[key].completedStages?.join(', ') || 'なし'}\n`;
+                        html += `現在ステージ: ${data.words[key].currentStage || 1}\n`;
+                        html += '</pre>';
+                    }
+                }
+            }
+            
+            // 英語フレーズ
+            if (data.phrases) {
+                html += '<h3>英語フレーズ</h3>';
+                for (const key in data.phrases) {
+                    if (key.startsWith('phraseCategory_')) {
+                        const category = key.replace('phraseCategory_', '');
+                        html += `<h4>カテゴリ: ${category}</h4>`;
+                        html += '<pre>';
+                        html += `クリア済みステージ: ${data.phrases[key].completedStages?.join(', ') || 'なし'}\n`;
+                        html += `現在ステージ: ${data.phrases[key].currentStage || 1}\n`;
+                        html += '</pre>';
+                    }
+                }
+            }
+            
+            html += '<h2>📝 生データ:</h2>';
+            html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            
+            output.innerHTML = html;
+        } else {
+            output.innerHTML = '<p class="empty">⚠️ 進捗データが保存されていません。ゲームをプレイしてステージをクリアすると、ここに表示されます。</p>';
+        }
+        
+        // コンソールにも出力
+        console.log('Progress data:', progress ? JSON.parse(progress) : null);
+    </script>
+</body>
+</html>

@@ -60,17 +60,16 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useAuth } from '@/composables/useAuth'
 import AppLogo from '@/components/atoms/AppLogo.vue'
 import PrimaryButton from '@/components/atoms/PrimaryButton.vue'
 
 const { t } = useI18n()
 const router = useRouter()
-const userStore = useUserStore()
+const { login, loading: isLoading } = useAuth()
 
 const email = ref('')
 const password = ref('')
-const isLoading = ref(false)
 
 const canSubmit = computed(() => {
   return email.value.length > 0 && password.value.length >= 6
@@ -78,21 +77,15 @@ const canSubmit = computed(() => {
 
 const handleLogin = async () => {
   if (!canSubmit.value) return
-  
-  isLoading.value = true
-  
+
   try {
-    await userStore.login({
-      email: email.value,
-      password: password.value
-    })
-    
+    // emailをusernameとして使用（バックエンドがusernameを要求するため）
+    await login(email.value, password.value)
+
     router.push('/home')
   } catch (error) {
     console.error('Login failed:', error)
-    // エラーハンドリング
-  } finally {
-    isLoading.value = false
+    // TODO: エラーメッセージ表示
   }
 }
 </script>

@@ -3,6 +3,26 @@ import { ref, computed } from 'vue'
 import { level1Words } from '@/data/words/level1'
 import { level2Words } from '@/data/words/level2'
 import { level3Words } from '@/data/words/level3'
+import { dailyPhrases } from '@/data/phrases/daily'
+import { businessPhrases } from '@/data/phrases/business'
+import { travelPhrases } from '@/data/phrases/travel'
+import { shoppingPhrases } from '@/data/phrases/shopping'
+import { restaurantPhrases } from '@/data/phrases/restaurant'
+import { emergencyPhrases } from '@/data/phrases/emergency'
+// Core phrases - new organized structure
+import { core1Phrases } from '@/data/phrases/core/core1'
+import { core2Phrases } from '@/data/phrases/core/core2'
+import { core3Phrases } from '@/data/phrases/core/core3'
+import { core4Phrases } from '@/data/phrases/core/core4'
+import { core5Phrases } from '@/data/phrases/core/core5'
+import { core6Phrases } from '@/data/phrases/core/core6'
+import { core7Phrases } from '@/data/phrases/core/core7'
+import { core8Phrases } from '@/data/phrases/core/core8'
+import { core9Phrases } from '@/data/phrases/core/core9'
+import { core10Phrases } from '@/data/phrases/core/core10'
+import { core11Phrases } from '@/data/phrases/core/core11'
+import { core12Phrases } from '@/data/phrases/core/core12'
+import { core13Phrases } from '@/data/phrases/core/core13'
 
 // Basic Typing Content
 export interface BasicStageContent {
@@ -31,7 +51,8 @@ export interface PhraseContent {
   id: string
   english: string
   japanese: string
-  category: 'daily' | 'business' | 'travel' | 'shopping' | 'restaurant' | 'emergency'
+  category: 'daily' | 'business' | 'travel' | 'shopping' | 'restaurant' | 'emergency' | 'core' |
+    'core1' | 'core2' | 'core3' | 'core4' | 'core5' | 'core6' | 'core7' | 'core8' | 'core9' | 'core10' | 'core11' | 'core12' | 'core13'
   situation: string
   difficulty: 1 | 2 | 3
 }
@@ -60,6 +81,38 @@ export const useContentStore = defineStore('content', () => {
   const availableCategories = computed(() => {
     return Array.from(new Set(phrases.value.map(phrase => phrase.category)))
   })
+
+  // Enhanced core syntax management
+  const getCorePhrasesEnhanced = computed(() => {
+    return phrases.value.filter(phrase => phrase.category === 'core')
+  })
+
+  const getCoreStageCount = computed(() => {
+    return 13
+  })
+
+  const getCorePhrasesbyStage = computed(() => {
+    return (stage: number) => {
+      const targetCategory = `core${stage}`
+      return phrases.value.filter(phrase => phrase.category === targetCategory)
+    }
+  })
+
+  // ユニット用の関数（10フレーズずつ）
+  const getCorePhrasesbySubstage = computed(() => {
+    return (stage: number, substage: '1' | '2') => {
+      const targetCategory = `core${stage}`
+      const stageData = phrases.value.filter(phrase => phrase.category === targetCategory)
+
+      // Each stage has 20 phrases, split into 2 units of 10 each
+      if (substage === '1') {
+        return stageData.slice(0, 10)
+      } else {
+        return stageData.slice(10, 20)
+      }
+    }
+  })
+
 
   // Actions
   const initializeBasicContent = (): void => {
@@ -293,121 +346,27 @@ export const useContentStore = defineStore('content', () => {
 
   const initializePhrasesContent = (): void => {
     phrases.value = [
-      // Daily Conversation
-      { 
-        id: 'p001', 
-        english: 'How are you today?', 
-        japanese: '今日はいかがですか？', 
-        category: 'daily', 
-        situation: '挨拶', 
-        difficulty: 1 
-      },
-      { 
-        id: 'p002', 
-        english: 'What time is it?', 
-        japanese: '今何時ですか？', 
-        category: 'daily', 
-        situation: '時間確認', 
-        difficulty: 1 
-      },
-      { 
-        id: 'p003', 
-        english: 'See you tomorrow.', 
-        japanese: 'また明日お会いしましょう。', 
-        category: 'daily', 
-        situation: '別れの挨拶', 
-        difficulty: 1 
-      },
-
-      // Business
-      { 
-        id: 'p101', 
-        english: 'Could we schedule a meeting?', 
-        japanese: '会議を設定できますでしょうか？', 
-        category: 'business', 
-        situation: '会議の設定', 
-        difficulty: 2 
-      },
-      { 
-        id: 'p102', 
-        english: 'I would like to discuss this project.', 
-        japanese: 'このプロジェクトについて話し合いたいです。', 
-        category: 'business', 
-        situation: 'プロジェクト相談', 
-        difficulty: 2 
-      },
-
-      // Travel
-      { 
-        id: 'p201', 
-        english: 'Where is the nearest station?', 
-        japanese: '最寄りの駅はどこですか？', 
-        category: 'travel', 
-        situation: '道案内', 
-        difficulty: 1 
-      },
-      { 
-        id: 'p202', 
-        english: 'How much is the ticket?', 
-        japanese: 'チケットはいくらですか？', 
-        category: 'travel', 
-        situation: '料金確認', 
-        difficulty: 1 
-      },
-
-      // Shopping
-      { 
-        id: 'p301', 
-        english: 'How much does this cost?', 
-        japanese: 'これはいくらですか？', 
-        category: 'shopping', 
-        situation: '価格確認', 
-        difficulty: 1 
-      },
-      { 
-        id: 'p302', 
-        english: 'Do you accept credit cards?', 
-        japanese: 'クレジットカードは使えますか？', 
-        category: 'shopping', 
-        situation: '支払い方法', 
-        difficulty: 1 
-      },
-
-      // Restaurant
-      { 
-        id: 'p401', 
-        english: 'Can I see the menu, please?', 
-        japanese: 'メニューを見せてください。', 
-        category: 'restaurant', 
-        situation: 'メニュー依頼', 
-        difficulty: 1 
-      },
-      { 
-        id: 'p402', 
-        english: 'I would like to order this.', 
-        japanese: 'これを注文したいです。', 
-        category: 'restaurant', 
-        situation: '注文', 
-        difficulty: 1 
-      },
-
-      // Emergency
-      { 
-        id: 'p501', 
-        english: 'I need help, please.', 
-        japanese: '助けが必要です。', 
-        category: 'emergency', 
-        situation: '緊急時', 
-        difficulty: 1 
-      },
-      { 
-        id: 'p502', 
-        english: 'Please call the police.', 
-        japanese: '警察を呼んでください。', 
-        category: 'emergency', 
-        situation: '警察', 
-        difficulty: 2 
-      }
+      // Load all phrase categories from external files
+      ...dailyPhrases,
+      ...businessPhrases,
+      ...travelPhrases,
+      ...shoppingPhrases,
+      ...restaurantPhrases,
+      ...emergencyPhrases,
+      // Core phrases - organized by stage
+      ...core1Phrases,
+      ...core2Phrases,
+      ...core3Phrases,
+      ...core4Phrases,
+      ...core5Phrases,
+      ...core6Phrases,
+      ...core7Phrases,
+      ...core8Phrases,
+      ...core9Phrases,
+      ...core10Phrases,
+      ...core11Phrases,
+      ...core12Phrases,
+      ...core13Phrases
     ]
   }
 
@@ -442,6 +401,12 @@ export const useContentStore = defineStore('content', () => {
     getWordsByLevel,
     getPhrasesByCategory,
     availableCategories,
+
+    // Enhanced Core System
+    getCorePhrasesEnhanced,
+    getCoreStageCount,
+    getCorePhrasesbyStage,
+    getCorePhrasesbySubstage,
 
     // Actions
     initializeContent,
