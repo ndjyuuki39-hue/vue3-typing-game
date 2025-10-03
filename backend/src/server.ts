@@ -23,7 +23,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'https://vue3-typing-game.vercel.app',
   process.env.FRONTEND_URL
-].filter(Boolean)
+].filter((origin): origin is string => typeof origin === 'string')
 
 await server.register(cors, {
   origin: allowedOrigins,

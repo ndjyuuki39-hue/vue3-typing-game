@@ -101,6 +101,13 @@ export const authRouter = router({
       }
 
       // パスワード検証
+      if (!user.passwordHash) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'このアカウントはOAuth専用です'
+        })
+      }
+
       const isValidPassword = await userService.verifyPassword(
         password,
         user.passwordHash
@@ -238,8 +245,6 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const userService = new UserService(ctx.prisma)
-
       // Googleからユーザー情報取得
       const googleUser = await getGoogleUserInfo(input.accessToken)
 

@@ -28,7 +28,7 @@ export async function getGoogleUserInfo(
       throw new Error(`Google API error: ${response.statusText}`)
     }
 
-    const userInfo = await response.json()
+    const userInfo = (await response.json()) as GoogleUserInfo
     return userInfo
   } catch (error) {
     console.error('Failed to fetch Google user info:', error)
@@ -77,7 +77,7 @@ export async function exchangeGoogleCode(
       throw new Error(`Token exchange failed: ${response.statusText}`)
     }
 
-    return await response.json()
+    return (await response.json()) as { access_token: string; id_token: string }
   } catch (error) {
     console.error('Failed to exchange Google code:', error)
     throw new TRPCError({
