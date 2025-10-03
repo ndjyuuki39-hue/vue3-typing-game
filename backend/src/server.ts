@@ -18,15 +18,9 @@ const server = Fastify({
 const PORT = Number(process.env.PORT) || 3001
 const HOST = '0.0.0.0'
 
-// CORS設定
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://vue3-typing-game.vercel.app',
-  process.env.FRONTEND_URL
-].filter((origin): origin is string => typeof origin === 'string')
-
+// CORS設定 - 一時的に全て許可
 await server.register(cors, {
-  origin: allowedOrigins,
+  origin: true, // すべてのオリジンを許可
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
 })
