@@ -73,15 +73,21 @@ export const useAuth = () => {
 
   // 認証チェック
   const checkAuth = async () => {
+    console.log('🔐 checkAuth called')
     const token = localStorage.getItem('accessToken')
     if (!token) {
+      console.log('❌ No access token found')
       user.value = null
       return
     }
 
     try {
-      user.value = await trpc.auth.me.query()
+      console.log('✅ Access token found, fetching user...')
+      const userData = await trpc.auth.me.query()
+      user.value = userData
+      console.log('✅ User authenticated:', userData)
     } catch (error) {
+      console.log('⚠️ Auth failed, trying refresh token...')
       // トークンリフレッシュを試みる
       try {
         const refreshToken = localStorage.getItem('refreshToken')
@@ -89,10 +95,13 @@ export const useAuth = () => {
           const result = await trpc.auth.refresh.mutate({ refreshToken })
           localStorage.setItem('accessToken', result.accessToken)
           user.value = await trpc.auth.me.query()
+          console.log('✅ Token refreshed, user authenticated')
         } else {
+          console.log('❌ No refresh token, logging out')
           logout()
         }
       } catch {
+        console.log('❌ Refresh failed, logging out')
         logout()
       }
     }
