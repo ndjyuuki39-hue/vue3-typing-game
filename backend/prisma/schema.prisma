@@ -1,12 +1,12 @@
 // Prisma Schema for Vue3 Typing Game
-// SQLite を使用（開発環境）
+// PostgreSQL を使用（本番環境）
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
