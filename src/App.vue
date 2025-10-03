@@ -16,23 +16,30 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
+  import { computed, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
   import { RouterView } from 'vue-router'
-  
+
   import AppHeader from '@/components/organisms/AppHeader.vue'
   import SettingsModal from '@/components/organisms/SettingsModal.vue'
-  
+
   import { useSettingsStore } from '@/stores/settings'
+  import { useAuth } from '@/composables/useAuth'
   import { LegacyRuntimeGuard } from '@/utils/legacy-runtime-guard'
-  
+
   // Runtime legacy guard initialization
   LegacyRuntimeGuard.init()
-  
+
   const route = useRoute()
   const settingsStore = useSettingsStore()
-  
+  const { checkAuth } = useAuth()
+
   const isLandingPage = computed(() => route.meta?.hideHeader === true)
+
+  // Check authentication on app mount
+  onMounted(() => {
+    checkAuth()
+  })
 </script>
 
 <style lang="scss">
