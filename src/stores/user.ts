@@ -423,15 +423,6 @@ export const useUserStore = defineStore('user', () => {
 
   const loadProgress = (): void => {
     try {
-      // Check if user is authenticated
-      const accessToken = localStorage.getItem('accessToken')
-      if (!accessToken) {
-        // Clear progress if not authenticated
-        localStorage.removeItem(PROGRESS_STORAGE_KEY)
-        localStorage.removeItem(USER_STORAGE_KEY)
-        return
-      }
-
       const saved = localStorage.getItem(PROGRESS_STORAGE_KEY)
       if (saved) {
         const savedProgress = JSON.parse(saved)
@@ -439,6 +430,7 @@ export const useUserStore = defineStore('user', () => {
           ...progress.value,
           ...savedProgress
         }
+        console.log('📥 Progress loaded from localStorage')
       }
     } catch (error) {
       console.warn('Failed to load progress from localStorage:', error)
@@ -478,7 +470,9 @@ export const useUserStore = defineStore('user', () => {
       totalCharactersTyped: 0,
       totalGames: 0
     }
-    console.log('✅ Progress reset to initial state')
+    // Also clear from localStorage
+    localStorage.removeItem(PROGRESS_STORAGE_KEY)
+    console.log('✅ Progress reset to initial state and cleared from localStorage')
   }
 
   const clearStorage = (): void => {
