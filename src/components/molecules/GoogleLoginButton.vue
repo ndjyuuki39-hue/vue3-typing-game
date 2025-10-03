@@ -46,9 +46,33 @@ const router = useRouter()
 const userStore = useUserStore()
 const loading = ref(false)
 
+interface GoogleTokenResponse {
+  access_token: string
+  token_type: string
+  expires_in: number
+}
+
+interface GoogleOAuthError {
+  type: string
+  message?: string
+}
+
 declare global {
   interface Window {
-    google: any
+    google: {
+      accounts: {
+        oauth2: {
+          initTokenClient: (config: {
+            client_id: string
+            scope: string
+            callback: (response: GoogleTokenResponse) => void
+            error_callback: (error: GoogleOAuthError) => void
+          }) => {
+            requestAccessToken: () => void
+          }
+        }
+      }
+    }
   }
 }
 
@@ -68,7 +92,7 @@ const handleGoogleLogin = () => {
   window.google.accounts.oauth2.initTokenClient({
     client_id: clientId,
     scope: 'email profile',
-    callback: async (response: any) => {
+    callback: async (response: GoogleTokenResponse) => {
       try {
         if (response.access_token) {
           // バックエンドにアクセストークンを送信
@@ -86,14 +110,15 @@ const handleGoogleLogin = () => {
           // ホームへリダイレクト
           router.push('/')
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Google login failed:', error)
-        alert(error.message || 'Googleログインに失敗しました')
+        const errorMessage = error instanceof Error ? error.message : 'Googleログインに失敗しました'
+        alert(errorMessage)
       } finally {
         loading.value = false
       }
     },
-    error_callback: (error: any) => {
+    error_callback: (error: GoogleOAuthError) => {
       console.error('Google OAuth error:', error)
       loading.value = false
     }
