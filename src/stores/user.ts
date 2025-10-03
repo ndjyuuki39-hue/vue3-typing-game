@@ -423,6 +423,15 @@ export const useUserStore = defineStore('user', () => {
 
   const loadProgress = (): void => {
     try {
+      // Check if user is authenticated
+      const accessToken = localStorage.getItem('accessToken')
+      if (!accessToken) {
+        // Clear progress if not authenticated
+        localStorage.removeItem(PROGRESS_STORAGE_KEY)
+        localStorage.removeItem(USER_STORAGE_KEY)
+        return
+      }
+
       const saved = localStorage.getItem(PROGRESS_STORAGE_KEY)
       if (saved) {
         const savedProgress = JSON.parse(saved)
