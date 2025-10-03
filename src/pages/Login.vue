@@ -50,6 +50,9 @@
               {{ t('auth.signUp') }}
             </router-link>
           </p>
+          <router-link to="/" class="back-to-home">
+            ← ホームに戻る
+          </router-link>
         </div>
       </div>
     </div>
@@ -176,6 +179,9 @@ const handleLogin = async () => {
 
 .form-footer {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 .footer-text {
@@ -191,6 +197,17 @@ const handleLogin = async () => {
 
   &:hover {
     color: var(--accent-purple);
+  }
+}
+
+.back-to-home {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--accent-blue);
   }
 }
 </style>
