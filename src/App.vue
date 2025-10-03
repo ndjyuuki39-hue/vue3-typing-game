@@ -37,8 +37,15 @@
   const isLandingPage = computed(() => route.meta?.hideHeader === true)
 
   // Check authentication on app mount
-  onMounted(() => {
-    checkAuth()
+  onMounted(async () => {
+    await checkAuth()
+
+    // Clear progress if not authenticated
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      localStorage.removeItem('vue3-typing-game-progress')
+      localStorage.removeItem('vue3-typing-game-user')
+    }
   })
 </script>
 
